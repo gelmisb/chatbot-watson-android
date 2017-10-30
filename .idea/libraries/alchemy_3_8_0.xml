@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="alchemy-3.8.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.ibm.watson.developer_cloud/alchemy/3.8.0/853ade41c6751993cd7afc0d4a8887ce6fc5a387/alchemy-3.8.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.ibm.watson.developer_cloud/alchemy/3.8.0/fb01e7a69c567e2eaa3d6555f6a7c5c0b2ba7/alchemy-3.8.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -32,6 +32,10 @@ import com.ibm.watson.developer_cloud.android.library.audio.utils.ContentType;
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
+import com.ibm.watson.developer_cloud.discovery.v1.Discovery;
+import com.ibm.watson.developer_cloud.discovery.v1.model.document.CreateDocumentRequest;
+import com.ibm.watson.developer_cloud.discovery.v1.model.document.CreateDocumentResponse;
+import com.ibm.watson.developer_cloud.http.HttpMediaType;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeakerLabel;
@@ -43,6 +47,8 @@ import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private static String TAG = "MainActivity";
     private static final int RECORD_REQUEST_CODE = 101;
+
     private boolean listening = false;
     private SpeechToText speechService;
     private TextToSpeech textToSpeech;
@@ -90,21 +97,42 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         mContext = getApplicationContext();
-        conversation_username = mContext.getString(R.string.conversation_username);
-        conversation_password = mContext.getString(R.string.conversation_password);
-        workspace_id = mContext.getString(R.string.workspace_id);
-        STT_username = mContext.getString(R.string.STT_username);
-        STT_password = mContext.getString(R.string.STT_password);
-        TTS_username = mContext.getString(R.string.TTS_username);
-        TTS_password = mContext.getString(R.string.TTS_password);
+        conversation_username = "98e3168d-7c24-4958-81f2-aaa303ab9775";
+        conversation_password = "A3CCaGkbrBi5";
+
+
+        workspace_id = "66a84a01-8b2e-4ec3-8b9f-c80ceeb6d707";
+        STT_username = "3b09c22d-6681-4a51-b070-1b17a29859d7";
+        STT_password = "CFJcDBkcbC4G";
+        TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
+        TTS_password = "sarujZ1gbc40";
         analytics_APIKEY = mContext.getString(R.string.mobileanalytics_apikey);
 
+
+
+     /*
+        ***NEWS WATSON API***
+
+        Discovery discovery = new Discovery("2017-10-16");
+        discovery.setEndPoint("https://gateway.watsonplatform.net/discovery/api/v1");
+        discovery.setUsernameAndPassword("{f91df7b6-84b4-4ec2-83da-5d4e6122dd7e}", "{XbcFMOwSAxaR}");
+        String environmentId = "{environment_id}";
+        String collectionId = "{collection_id}";
+        String documentJson = "{\"field\":\"value\"}";
+        InputStream documentStream = new ByteArrayInputStream(documentJson.getBytes());
+
+        CreateDocumentRequest.Builder builder = new CreateDocumentRequest.Builder(environmentId, collectionId);
+        builder.inputStream(documentStream, HttpMediaType.APPLICATION_JSON);
+        CreateDocumentResponse createResponse = discovery.createDocument(builder.build()).execute();
+*/
 
         //Bluemix Mobile Analytics
         BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);
         //Analytics is configured to record lifecycle events.
-        Analytics.init(getApplication(), "WatBot", analytics_APIKEY, false, Analytics.DeviceEvent.ALL);
+        Analytics.init(getApplication(), "Mia-Testing", analytics_APIKEY, false, Analytics.DeviceEvent.ALL);
         //Analytics.send();
         myLogger = Logger.getLogger("myLogger");
         // Send recorded usage analytics to the Mobile Analytics Service
@@ -176,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         Message audioMessage;
                         try {
-
                             audioMessage =(Message) messageArrayList.get(position);
                             streamPlayer = new StreamPlayer();
                             if(audioMessage != null && !audioMessage.getMessage().isEmpty())
@@ -263,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
             inputMessage.setId("1");
             messageArrayList.add(inputMessage);
             myLogger.info("Sending a message to Watson Conversation Service");
-
         }
         else
         {
@@ -271,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
             inputMessage.setMessage(inputmessage);
             inputMessage.setId("100");
             this.initialRequest = false;
-            Toast.makeText(getApplicationContext(),"Tap on the message for Voice",Toast.LENGTH_LONG).show();
 
         }
 
