@@ -44,20 +44,16 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.websocket.RecognizeCallb
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 
-
 import org.json.JSONObject;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import static com.ibm.watson.developer_cloud.android.library.audio.MicrophoneHelper.REQUEST_PERMISSION;
 
 
 public class MainActivity extends AppCompatActivity {
-
 
     private RecyclerView recyclerView;
     private ChatAdapter mAdapter;
@@ -91,18 +87,15 @@ public class MainActivity extends AppCompatActivity {
     private MicrophoneHelper microphoneHelper;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         mContext = getApplicationContext();
+
         conversation_username = "98e3168d-7c24-4958-81f2-aaa303ab9775";
         conversation_password = "A3CCaGkbrBi5";
-
 
         workspace_id = "66a84a01-8b2e-4ec3-8b9f-c80ceeb6d707";
         STT_username = "3b09c22d-6681-4a51-b070-1b17a29859d7";
@@ -110,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
         analytics_APIKEY = mContext.getString(R.string.mobileanalytics_apikey);
-
 
 
      /*
@@ -127,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         CreateDocumentRequest.Builder builder = new CreateDocumentRequest.Builder(environmentId, collectionId);
         builder.inputStream(documentStream, HttpMediaType.APPLICATION_JSON);
         CreateDocumentResponse createResponse = discovery.createDocument(builder.build()).execute();
-*/
+    */
 
         //Bluemix Mobile Analytics
         BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);
@@ -202,19 +194,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view, final int position) {
                 Thread thread = new Thread(new Runnable() {
                     public void run() {
-                        Message audioMessage;
-                        try {
-                            audioMessage =(Message) messageArrayList.get(position);
-                            streamPlayer = new StreamPlayer();
-                            if(audioMessage != null && !audioMessage.getMessage().isEmpty())
-                                //Change the Voice format and choose from the available choices
-                                streamPlayer.playStream(textToSpeech.synthesize(audioMessage.getMessage(), Voice.EN_LISA).execute());
-                            else
-                                streamPlayer.playStream(textToSpeech.synthesize("No Text Specified", Voice.EN_LISA).execute());
+                    Message audioMessage;
+                    try {
+                        audioMessage =(Message) messageArrayList.get(position);
+                        streamPlayer = new StreamPlayer();
+                        if(audioMessage != null && !audioMessage.getMessage().isEmpty())
+                            //Change the Voice format and choose from the available choices
+                            streamPlayer.playStream(textToSpeech.synthesize(audioMessage.getMessage(), Voice.EN_LISA).execute());
+                        else
+                            streamPlayer.playStream(textToSpeech.synthesize("No Text Specified", Voice.EN_LISA).execute());
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     }
                 });
                 thread.start();
@@ -230,9 +222,9 @@ public class MainActivity extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(checkInternetConnection()) {
-                    sendMessage();
-                }
+            if(checkInternetConnection()) {
+                sendMessage();
+            }
             }
         });
 
@@ -276,14 +268,19 @@ public class MainActivity extends AppCompatActivity {
 
     protected void makeRequest() {
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.RECORD_AUDIO},
-                MicrophoneHelper.REQUEST_PERMISSION);
+            new String[]{Manifest.permission.RECORD_AUDIO},
+            MicrophoneHelper.REQUEST_PERMISSION);
     }
 
     // Sending a message to Watson Conversation Service
     private void sendMessage() {
 
         final String inputmessage = this.inputMessage.getText().toString().trim();
+
+        if(inputMessage.getText().toString().equals("calendar") || inputMessage.getText().toString().equals("Calendar")){
+            Toast.makeText(MainActivity.this,"*Opens calendar*", Toast.LENGTH_LONG).show();
+        }
+
         if(!this.initialRequest) {
             Message inputMessage = new Message();
             inputMessage.setMessage(inputmessage);
@@ -291,8 +288,8 @@ public class MainActivity extends AppCompatActivity {
             messageArrayList.add(inputMessage);
             myLogger.info("Sending a message to Watson Conversation Service");
         }
-        else
-        {
+
+        else {
             Message inputMessage = new Message();
             inputMessage.setMessage(inputmessage);
             inputMessage.setId("100");
@@ -305,55 +302,54 @@ public class MainActivity extends AppCompatActivity {
 
         Thread thread = new Thread(new Runnable(){
             public void run() {
-                try {
+            try {
 
-                    ConversationService service = new ConversationService(ConversationService.VERSION_DATE_2017_02_03);
-                    service.setUsernameAndPassword(conversation_username, conversation_password);
-                    MessageRequest newMessage = new MessageRequest.Builder().inputText(inputmessage).context(context).build();
-                    MessageResponse response = service.message(workspace_id, newMessage).execute();
+                ConversationService service = new ConversationService(ConversationService.VERSION_DATE_2017_02_03);
+                service.setUsernameAndPassword(conversation_username, conversation_password);
+                MessageRequest newMessage = new MessageRequest.Builder().inputText(inputmessage).context(context).build();
+                MessageResponse response = service.message(workspace_id, newMessage).execute();
 
-                    //Passing Context of last conversation
-                    if(response.getContext() !=null)
-                    {
-                        context.clear();
-                        context = response.getContext();
+                //Passing Context of last conversation
+                if(response.getContext() !=null)
+                {
+                    context.clear();
+                    context = response.getContext();
 
-                    }
-                    Message outMessage=new Message();
-                    if(response!=null)
-                    {
-                        if(response.getOutput()!=null && response.getOutput().containsKey("text"))
-                        {
-
-                            ArrayList responseList = (ArrayList) response.getOutput().get("text");
-                            if(null !=responseList && responseList.size()>0){
-                                outMessage.setMessage((String)responseList.get(0));
-                                outMessage.setId("2");
-                            }
-                            messageArrayList.add(outMessage);
-                        }
-
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                mAdapter.notifyDataSetChanged();
-                                if (mAdapter.getItemCount() > 1) {
-                                    recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount()-1);
-
-                                }
-
-                            }
-                        });
-
-
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                Message outMessage=new Message();
+                if(response!=null)
+                {
+                    if(response.getOutput()!=null && response.getOutput().containsKey("text"))
+                    {
+
+                        ArrayList responseList = (ArrayList) response.getOutput().get("text");
+                        if(null !=responseList && responseList.size()>0){
+                            outMessage.setMessage((String)responseList.get(0));
+                            outMessage.setId("2");
+                        }
+                        messageArrayList.add(outMessage);
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            mAdapter.notifyDataSetChanged();
+                            if (mAdapter.getItemCount() > 1) {
+                                recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount()-1);
+
+                            }
+
+                        }
+                    });
+
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             }
         });
 
         thread.start();
-
     }
 
     //Record a message via Watson Speech to Text
@@ -410,7 +406,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, " No Internet Connection available ", Toast.LENGTH_LONG).show();
             return false;
         }
-
     }
 
     //Private Methods - Speech to Text
@@ -436,7 +431,6 @@ public class MainActivity extends AppCompatActivity {
             {
                 recoTokens.add(speechResults);
                 Log.i("SPEECHRESULTS",speechResults.getSpeakerLabels().get(0).toString());
-
 
             }*/
             if(speechResults.getResults() != null && !speechResults.getResults().isEmpty()) {
