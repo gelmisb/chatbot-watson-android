@@ -1,6 +1,7 @@
 package com.example.vmac.WatBot;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -15,7 +16,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -87,21 +90,28 @@ public class MainActivity extends AppCompatActivity {
     private MicrophoneHelper microphoneHelper;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recordMessage();
         mContext = getApplicationContext();
 
         conversation_username = "98e3168d-7c24-4958-81f2-aaa303ab9775";
         conversation_password = "A3CCaGkbrBi5";
+//
+//        if(messageArrayList != null) {
+//            speak(messageArrayList.listIterator().nextIndex());
+//
+//
+//        }
 
         workspace_id = "66a84a01-8b2e-4ec3-8b9f-c80ceeb6d707";
         STT_username = "3b09c22d-6681-4a51-b070-1b17a29859d7";
         STT_password = "CFJcDBkcbC4G";
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
+
         analytics_APIKEY = mContext.getString(R.string.mobileanalytics_apikey);
 
 
@@ -190,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
             makeRequest();
         }
 
-
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, final int position) {
@@ -216,10 +225,21 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(View view, int position) {
-                recordMessage();
-
+//                recordMessage();
             }
+
         }));
+
+        btnRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    recordMessage();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         btnSend.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -230,12 +250,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnRecord.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                recordMessage();
+
+
+//        btnRecord.setOnClickListener(new View.OnClickListener() {
+//            @Override public void onClick(View v) {
+//                recordMessage();
+//            }
+//        });
+    };
+
+    public void speak(final String outMessage){
+
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+
+                try {
+                    streamPlayer = new StreamPlayer();
+                    streamPlayer.playStream(textToSpeech.synthesize(outMessage, Voice.EN_ALLISON).execute());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
-    };
+        thread.start();
+    }
+
 
     // Speech-to-Text Record Audio permission
     @Override
@@ -311,6 +350,7 @@ public class MainActivity extends AppCompatActivity {
                 MessageRequest newMessage = new MessageRequest.Builder().inputText(inputmessage).context(context).build();
                 MessageResponse response = service.message(workspace_id, newMessage).execute();
 
+
                 //Passing Context of last conversation
                 if(response.getContext() !=null)
                 {
@@ -321,6 +361,7 @@ public class MainActivity extends AppCompatActivity {
                 Message outMessage=new Message();
                 if(response!=null)
                 {
+
                     if(response.getOutput()!=null && response.getOutput().containsKey("text"))
                     {
 
@@ -328,7 +369,10 @@ public class MainActivity extends AppCompatActivity {
                         if(null !=responseList && responseList.size()>0){
                             outMessage.setMessage((String)responseList.get(0));
                             outMessage.setId("2");
+                            Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
+                            speak(outMessage.getMessage());
                         }
+
                         messageArrayList.add(outMessage);
                     }
 
@@ -339,7 +383,6 @@ public class MainActivity extends AppCompatActivity {
                                 recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount()-1);
 
                             }
-
                         }
                     });
 
@@ -355,13 +398,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Record a message via Watson Speech to Text
-    private void recordMessage() {
+    private void recordMessage() throws InterruptedException {
         //mic.setEnabled(false);
         speechService = new SpeechToText();
         speechService.setUsernameAndPassword(STT_username, STT_password);
 
 
-        if(listening != true) {
+        if(!listening) {
             capture = microphoneHelper.getInputStream(true);
             new Thread(new Runnable() {
                 @Override public void run() {
@@ -372,6 +415,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }).start();
+
+//            wait(1000);
+
             listening = true;
             Toast.makeText(MainActivity.this,"Listening....Click to Stop", Toast.LENGTH_LONG).show();
 
@@ -389,13 +435,14 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Check Internet Connection
-     * @return
+     * @return this
      */
     private boolean checkInternetConnection() {
         // get Connectivity Manager object to check connection
         ConnectivityManager cm =
                 (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        assert cm != null;
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();

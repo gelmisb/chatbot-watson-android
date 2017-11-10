@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="com.ibm.watson.developer_cloud:android-sdk-0.4.2">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/android-sdk-0.4.2.aar/06d7c552f66e3e4823ee36a5becae8af/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/android-sdk-0.4.2.aar/06d7c552f66e3e4823ee36a5becae8af/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/android-sdk-0.4.2.aar/775fe5dfc4a0c0acebdda0746b8def8e/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/android-sdk-0.4.2.aar/775fe5dfc4a0c0acebdda0746b8def8e/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
