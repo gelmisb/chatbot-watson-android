@@ -5,13 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -41,6 +44,7 @@ public class GoogleSignInTrial extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in_trial);
 
+        // Google sign in options
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
@@ -54,7 +58,6 @@ public class GoogleSignInTrial extends AppCompatActivity {
             }
         });
 
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -62,90 +65,57 @@ public class GoogleSignInTrial extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
-    }
 
-
-    public void facebookSignIn() {
+        // Facebook sign in options
+        callbackManager = CallbackManager.Factory.create();
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("email");
-
-        // If using in a fragment
-//        loginButton.setFragment(getBaseContext());
+        loginButton.setReadPermissions(Arrays.asList("user_status"));
 
         // Callback registration
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                // App code
-            }
+        loginButton.registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
 
-            @Override
-            public void onCancel() {
-                // App code
-            }
+                        Log.i("Success!!", loginResult.toString());
 
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-            }
-        });
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                loginResult.getAccessToken(),
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(
+                                            JSONObject object,
+                                            GraphResponse response) {
 
-        callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        try {
+                                            intent.putExtra("name", response.getJSONObject().get("name").toString());
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        startActivity(intent);
+                                    }
+                                });
 
-        loginButton.setReadPermissions(Arrays.asList(
-                "public_profile", "email", "user_birthday", "user_friends"));
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "id,name,link");
+                        request.setParameters(parameters);
+                        request.executeAsync();
+                    }
 
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onCancel() {
+                        Log.i("Cancelled!!", "Cancelled");
+                    }
 
-
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-
-
-                GraphRequest request = GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(),
-                        new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(JSONObject object, GraphResponse response) {
-                                Log.v("LoginActivity", response.toString());
-
-                                // Application code
-                                try {
-                                    String email = object.getString("email");
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    String birthday = object.getString("birthday"); // 01/31/1980 format
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender,birthday");
-                request.setParameters(parameters);
-                request.executeAsync();
-
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                Log.i("users name",parameters.getString("name"));
-//                intent.putExtra("name", name.getDisplayName());
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
-
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Log.i("Error!!", exception.toString());
+                    }
+                });
     }
+
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -159,12 +129,14 @@ public class GoogleSignInTrial extends AppCompatActivity {
 
         // WENT TO EAT -  FINISHED HERE
         // Facebook login
-//        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if(loginButton.isEnabled()){
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
 
+        // Google sing in option
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == 1) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
+            // The Task returned from this call is always completed, no need to attach a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
