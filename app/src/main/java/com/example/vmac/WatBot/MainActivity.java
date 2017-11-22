@@ -23,6 +23,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ibm.mobilefirstplatform.clientsdk.android.analytics.api.Analytics;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     private String analytics_APIKEY;
     private SpeakerLabelsDiarization.RecoTokens recoTokens;
     private MicrophoneHelper microphoneHelper;
+    private GoogleAccountCredential googleAccountCredential;
+    private GoogleSignInTrial googleSignInTrial;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -97,21 +101,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
 
+
+
+        // API code access keys
         conversation_username = "98e3168d-7c24-4958-81f2-aaa303ab9775";
         conversation_password = "A3CCaGkbrBi5";
-//
-//        if(messageArrayList != null) {
-//            speak(messageArrayList.listIterator().nextIndex());
-//
-//
-//        }
-
         workspace_id = "66a84a01-8b2e-4ec3-8b9f-c80ceeb6d707";
         STT_username = "3b09c22d-6681-4a51-b070-1b17a29859d7";
         STT_password = "CFJcDBkcbC4G";
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
-
         analytics_APIKEY = mContext.getString(R.string.mobileanalytics_apikey);
 
 
@@ -134,8 +133,10 @@ public class MainActivity extends AppCompatActivity {
         //Bluemix Mobile Analytics
         BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);
         //Analytics is configured to record lifecycle events.
+
         Analytics.init(getApplication(), "Mia-Testing", analytics_APIKEY, false, Analytics.DeviceEvent.ALL);
         //Analytics.send();
+
         myLogger = Logger.getLogger("myLogger");
         // Send recorded usage analytics to the Mobile Analytics Service
         Analytics.send(new ResponseListener() {
@@ -313,6 +314,12 @@ public class MainActivity extends AppCompatActivity {
             MicrophoneHelper.REQUEST_PERMISSION);
     }
 
+
+
+
+
+
+
     // Sending a message to Watson Conversation Service
     private void sendMessage() {
 
@@ -341,7 +348,10 @@ public class MainActivity extends AppCompatActivity {
         this.inputMessage.setText("");
         mAdapter.notifyDataSetChanged();
 
-        Thread thread = new Thread(new Runnable(){
+
+
+
+        final Thread thread = new Thread(new Runnable(){
             public void run() {
             try {
 
@@ -350,15 +360,18 @@ public class MainActivity extends AppCompatActivity {
                 MessageRequest newMessage = new MessageRequest.Builder().inputText(inputmessage).context(context).build();
                 MessageResponse response = service.message(workspace_id, newMessage).execute();
 
+                String name = getIntent().getStringExtra("name");
 
                 //Passing Context of last conversation
                 if(response.getContext() !=null)
                 {
                     context.clear();
                     context = response.getContext();
-
+                    Log.i("context", "  "  + context + " ");
                 }
-                Message outMessage=new Message();
+
+                Message outMessage = new Message();
+
                 if(response!=null)
                 {
 
@@ -366,12 +379,23 @@ public class MainActivity extends AppCompatActivity {
                     {
 
                         ArrayList responseList = (ArrayList) response.getOutput().get("text");
-                        if(null !=responseList && responseList.size()>0){
-                            outMessage.setMessage((String)responseList.get(0));
-                            outMessage.setId("2");
-                            Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
-                            speak(outMessage.getMessage());
-                        }
+
+                            if(null !=responseList && responseList.size()>0)
+                            {
+
+                                outMessage.setMessage((String)responseList.get(0));
+
+                                outMessage.setId("2");
+
+                                if(outMessage.getMessage().equals("Hello . How can I help you?"))
+                                {
+                                    outMessage.setMessage("Hello " + name + ", how could I help?");
+                                }
+
+                                Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
+
+                                speak(outMessage.getMessage());
+                            }
 
                         messageArrayList.add(outMessage);
                     }
@@ -386,8 +410,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
