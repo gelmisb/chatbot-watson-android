@@ -67,6 +67,9 @@ dependencies {
     // Below is just an example for People REST API access
     compile 'com.google.apis:google-api-services-people:v1-rev4-1.22.0'
 
+
+    compile 'com.facebook.android:facebook-login:[4,5)'
+
     testCompile 'junit:junit:4.12'
 //    compile 'com.google.code.gson:gson:2.8.0'
 }
