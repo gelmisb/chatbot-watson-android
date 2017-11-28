@@ -21,4 +21,6 @@
     </string>
 
     <string name="server_client_id">YOUR_SERVER_CLIENT_ID</string>
+    <string name="favourite">favourite</string>
+    <string name="action">Action</string>
 </resources>

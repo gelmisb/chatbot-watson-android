@@ -2,12 +2,17 @@ package com.example.vmac.WatBot;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +30,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.facebook.login.widget.LoginButton;
 import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ibm.mobilefirstplatform.clientsdk.android.analytics.api.Analytics;
@@ -92,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private MicrophoneHelper microphoneHelper;
     private GoogleAccountCredential googleAccountCredential;
     private GoogleSignInTrial googleSignInTrial;
+    private ComponentName cn;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -101,7 +111,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
 
+        // Activities custom toolbar
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
+        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoginManager.getInstance().logOut();
+                Intent intent = new Intent(getApplicationContext(), GoogleSignInTrial.class);
+                startActivity(intent);
+            }
+        });
 
         // API code access keys
         conversation_username = "98e3168d-7c24-4958-81f2-aaa303ab9775";
@@ -226,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(View view, int position) {
-//                recordMessage();
+
             }
 
         }));
@@ -251,13 +273,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-//        btnRecord.setOnClickListener(new View.OnClickListener() {
-//            @Override public void onClick(View v) {
-//                recordMessage();
-//            }
-//        });
     };
 
     public void speak(final String outMessage){
@@ -304,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-       // if (!permissionToRecordAccepted ) finish();
+        if (!permissionToRecordAccepted ) finish();
 
     }
 
@@ -315,18 +330,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-
     // Sending a message to Watson Conversation Service
     private void sendMessage() {
 
         final String inputmessage = this.inputMessage.getText().toString().trim();
 
         if(inputMessage.getText().toString().equals("calendar") || inputMessage.getText().toString().equals("Calendar")){
-            Toast.makeText(MainActivity.this,"*Opens calendar*", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent();
+
+            //Froyo or greater (mind you I just tested this on CM7 and the less than froyo one worked so it depends on the phone...)
+            cn = new ComponentName("com.google.android.calendar", "com.android.calendar.LaunchActivity");
+
+            intent.setComponent(cn);
+            startActivity(intent);
+        }
+
+        if(inputMessage.getText().toString().equals("call") || inputMessage.getText().toString().equals("Call") || inputMessage.getText().toString().equals("call ") || inputMessage.getText().toString().equals("Call ")){
+            Intent intent = new Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI);
+            startActivity(intent);
+        }
+
+        if(inputMessage.getText().toString().equals("music") || inputMessage.getText().toString().equals("Music") || inputMessage.getText().toString().equals("music ") || inputMessage.getText().toString().equals("Music ")){
+            Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MUSIC);
+            startActivity(intent);
         }
 
         if(!this.initialRequest) {
@@ -342,13 +368,10 @@ public class MainActivity extends AppCompatActivity {
             inputMessage.setMessage(inputmessage);
             inputMessage.setId("100");
             this.initialRequest = false;
-
         }
 
         this.inputMessage.setText("");
         mAdapter.notifyDataSetChanged();
-
-
 
 
         final Thread thread = new Thread(new Runnable(){
@@ -357,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ConversationService service = new ConversationService(ConversationService.VERSION_DATE_2017_02_03);
                 service.setUsernameAndPassword(conversation_username, conversation_password);
+
                 MessageRequest newMessage = new MessageRequest.Builder().inputText(inputmessage).context(context).build();
                 MessageResponse response = service.message(workspace_id, newMessage).execute();
 
@@ -392,6 +416,12 @@ public class MainActivity extends AppCompatActivity {
                                     outMessage.setMessage("Hello " + name + ", how could I help?");
                                 }
 
+
+                                if(outMessage.getMessage().equals("Would you like me to play music?"))
+                                {
+                                    outMessage.setMessage("Hello " + name + ", how could I help?");
+                                }
+
                                 Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
 
                                 speak(outMessage.getMessage());
@@ -423,7 +453,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Record a message via Watson Speech to Text
     private void recordMessage() throws InterruptedException {
-        //mic.setEnabled(false);
         speechService = new SpeechToText();
         speechService.setUsernameAndPassword(STT_username, STT_password);
 
@@ -439,8 +468,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }).start();
-
-//            wait(1000);
 
             listening = true;
             Toast.makeText(MainActivity.this,"Listening....Click to Stop", Toast.LENGTH_LONG).show();

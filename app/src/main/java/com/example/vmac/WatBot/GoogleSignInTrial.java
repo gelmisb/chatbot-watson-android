@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -66,6 +67,7 @@ public class GoogleSignInTrial extends AppCompatActivity {
 
 
 
+
         // Facebook sign in options
         callbackManager = CallbackManager.Factory.create();
 
@@ -75,6 +77,7 @@ public class GoogleSignInTrial extends AppCompatActivity {
         // Callback registration
         loginButton.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
+
                     @Override
                     public void onSuccess(LoginResult loginResult) {
 
@@ -82,18 +85,22 @@ public class GoogleSignInTrial extends AppCompatActivity {
 
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
+
                                 new GraphRequest.GraphJSONObjectCallback() {
+
                                     @Override
                                     public void onCompleted(
                                             JSONObject object,
                                             GraphResponse response) {
 
                                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
                                         try {
                                             intent.putExtra("name", response.getJSONObject().get("name").toString());
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
+
                                         startActivity(intent);
                                     }
                                 });
