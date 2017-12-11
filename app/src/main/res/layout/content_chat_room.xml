@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/darker_gray"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.vmac.WatBot.MainActivity"
     tools:showIn="@layout/activity_main">
@@ -17,14 +18,14 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:background="@android:color/white"
+        android:background="@color/place_autocomplete_search_text"
         android:orientation="horizontal"
-        android:weightSum="4"
-        android:id="@+id/linearLayout">
+        android:weightSum="4">
 
         <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/btn_record"

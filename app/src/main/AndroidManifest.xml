@@ -27,7 +27,7 @@
         android:roundIcon="@mipmap/ai_face"
         android:supportsRtl="true"
         android:name="android.support.multidex.MultiDexApplication"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/Theme.AppCompat.NoActionBar">
 
         <activity
             android:name=".MainActivity"

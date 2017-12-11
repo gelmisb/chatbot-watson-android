@@ -3,6 +3,6 @@
     <color name="colorPrimary">#adadad</color>
     <color name="colorPrimaryDark"> #1f2021 </color>
     <color name="colorAccent">#113ab2</color>
-    <color name="bg_bubble_self">#62caa6</color>
+    <color name="bg_bubble_self">#008ae6</color>
     <color name="bg_bubble_watbot">#ecf0f1</color>
 </resources>
