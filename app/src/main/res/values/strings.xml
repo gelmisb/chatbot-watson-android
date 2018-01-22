@@ -6,6 +6,12 @@
     <string name="facebook_app_id">2032410587000208</string>
     <string name="fb_login_protocol_scheme">fb2032410587000208</string>
 
+    <string name="service_not_available">Geolocation service not available</string>
+    <string name="invalid_lat_long_used">Invalid coordinates</string>
+    <string name="no_address_found">Address not found</string>
+    <string name="address_found">Address successfully recovered</string>
+    <string name="no_geocoder_available">No geocoder object exists</string>
+
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -23,4 +29,10 @@
     <string name="server_client_id">YOUR_SERVER_CLIENT_ID</string>
     <string name="favourite">favourite</string>
     <string name="action">Action</string>
+
+    <string name="title_activity_welcome_screen">WelcomeScreen</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="image">Image</string>
+    <string name="refresh_button">Refresh button</string>
 </resources>

@@ -111,10 +111,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
 
-        // Activities custom toolbar
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -413,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 if(outMessage.getMessage().equals("Hello . How can I help you?"))
                                 {
-                                    outMessage.setMessage("Hello " + name + ", how could I help?");
+                                    outMessage.setMessage("Hello " + name + ", how could I assist you?");
                                 }
 
 

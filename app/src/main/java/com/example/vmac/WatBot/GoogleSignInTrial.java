@@ -93,7 +93,7 @@ public class GoogleSignInTrial extends AppCompatActivity {
                                             JSONObject object,
                                             GraphResponse response) {
 
-                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
 
                                         try {
                                             intent.putExtra("name", response.getJSONObject().get("name").toString());
@@ -156,7 +156,7 @@ public class GoogleSignInTrial extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, MainScreenTime.class);
             intent.putExtra("name", account.getDisplayName());
             startActivity(intent);
 
