@@ -130,23 +130,7 @@ public class MainActivity extends AppCompatActivity {
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
         analytics_APIKEY = mContext.getString(R.string.mobileanalytics_apikey);
-
-
-     /*
-        ***NEWS WATSON API***
-
-        Discovery discovery = new Discovery("2017-10-16");
-        discovery.setEndPoint("https://gateway.watsonplatform.net/discovery/api/v1");
-        discovery.setUsernameAndPassword("{f91df7b6-84b4-4ec2-83da-5d4e6122dd7e}", "{XbcFMOwSAxaR}");
-        String environmentId = "{environment_id}";
-        String collectionId = "{collection_id}";
-        String documentJson = "{\"field\":\"value\"}";
-        InputStream documentStream = new ByteArrayInputStream(documentJson.getBytes());
-
-        CreateDocumentRequest.Builder builder = new CreateDocumentRequest.Builder(environmentId, collectionId);
-        builder.inputStream(documentStream, HttpMediaType.APPLICATION_JSON);
-        CreateDocumentResponse createResponse = discovery.createDocument(builder.build()).execute();
-    */
+        
 
         //Bluemix Mobile Analytics
         BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);

@@ -61,6 +61,15 @@ public class MainScreenTime extends AppCompatActivity implements
 
         weatherButton = (Button) findViewById(R.id.buttonWeather);
         botSpeak = (Button) findViewById(R.id.talkBtn);
+        news = (Button) findViewById(R.id.newsBtn);
+
+        news.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), News.class);
+                startActivity(intent);
+            }
+        });
 
         botSpeak.setOnClickListener(new View.OnClickListener() {
             @Override

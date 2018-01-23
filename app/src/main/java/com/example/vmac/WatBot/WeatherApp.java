@@ -79,49 +79,29 @@ public class WeatherApp extends AppCompatActivity implements
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
             } else {
-
-                // No explanation needed, we can request the permission.
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         }
 
         //Watson Text-to-Speech Service on Bluemix
         textToSpeech = new TextToSpeech();
         textToSpeech.setUsernameAndPassword(TTS_username, TTS_password);
-
-
-
     }
-
 
 
     public void getLastKnownLocation() {
         Log.i("Button called", "getLastKnownLocation");
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             Log.i("Button called", "mFusedLocationClient");
 
             return;
-
         }
+
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
@@ -150,7 +130,7 @@ public class WeatherApp extends AppCompatActivity implements
     public void updateLocation (View view){
         Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         if (vibe != null) {
-            vibe.vibrate(250);
+            vibe.vibrate(200);
         }
         getLastKnownLocation();
     }
@@ -175,8 +155,16 @@ public class WeatherApp extends AppCompatActivity implements
     private void updateUI(){
 
         String url = "https://09ddab72-92bc-4c73-8eeb-994f8c7b9e64:LoR8rebnJL@twcservice.eu-gb.mybluemix.net/api/weather/v1/geocode/" + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude() + "/forecast/hourly/48hour.json";
-//        /v1/geocode/{latitude}/{longitude}/forecast/daily/3day.json
-//        /v1/geocode/{latitude}/{longitude}/forecast/hourly/48hour.json
+
+        // Different types of weather configurations are available
+        // The common and most practical is used which is the 48hour option
+        //
+        //        /v1/geocode/{latitude}/{longitude}/forecast/daily/3day.json
+        //        /v1/geocode/{latitude}/{longitude}/forecast/hourly/48hour.json
+        //
+        //
+
+
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
 
             @Override
@@ -221,11 +209,13 @@ public class WeatherApp extends AppCompatActivity implements
                     TextView dow = (TextView)findViewById(R.id.dow);
                     dow.setText(fd.getString("dow"));
 
-                    String theSpokenString = "In your area currently, it's, " + nearly  + "°C " + fd.getString("phrase_22char") +  " Where it's "  +fd.getString("clds") + "% are cloud coverage and " +fd.getString("rh") + "% humidity - it currently feels like "  + nearly2 + "°C";
+                    String theSpokenString = "In your area - currently, it's, " + nearly  + "°C " + fd.getString("phrase_22char") +  " Where it's "  +fd.getString("clds") + "% are cloud coverage and " +fd.getString("rh") + "% humidity - it currently feels like "  + nearly2 + "°C";
 
                     if(fd.getInt("pop") == 0 ){
                         speak(theSpokenString);
-                    } else if(fd.getInt("pop") > 0 ){
+                    }
+
+                    if(fd.getInt("pop") > 0 ){
                         speak(theSpokenString + "There is a probability of " + fd.getString("precip_type") + " which is " + fd.getInt("pop") + "- - Maybe you'd like to grab a coat just in case?");
                     }
 

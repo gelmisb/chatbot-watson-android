@@ -9,6 +9,24 @@
 
     <LinearLayout
         android:layout_width="360dp"
+        android:layout_height="116dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.372">
+
+        <Button
+            android:id="@+id/newsBtn"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:text="News" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="360dp"
         android:layout_height="120dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
@@ -21,7 +39,7 @@
         <Button
             android:id="@+id/talkBtn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:text="Talk" />
     </LinearLayout>
 
