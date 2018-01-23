@@ -66,6 +66,12 @@ public class MainScreenTime extends AppCompatActivity implements
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                if (vibe != null) {
+                    vibe.vibrate(150);
+                }
                 Intent intent = new Intent(getApplicationContext(), News.class);
                 startActivity(intent);
             }
@@ -85,7 +91,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
                 if (vibe != null) {
-                    vibe.vibrate(250);
+                    vibe.vibrate(150);
                 }
                 Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
                 startActivity(intent);

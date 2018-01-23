@@ -69,7 +69,11 @@ public class News extends AppCompatActivity {
         newsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
+                if (vibe != null) {
+                    vibe.vibrate(150);
+                }
                 Intent intent = new Intent(News.this,SingleNewsActivity.class);
                 intent.putExtra("Article", model.getArticleAt((int)l));
                 startActivity(intent);
