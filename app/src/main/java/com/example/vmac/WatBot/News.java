@@ -109,6 +109,7 @@ public class News extends AppCompatActivity {
                 //TODO Handle problems..
             }
             return responseString;
+
         }
 
         @Override

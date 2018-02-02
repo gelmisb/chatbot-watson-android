@@ -1,6 +1,15 @@
 package com.example.vmac.WatBot;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,12 +18,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.VideoView;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -31,6 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class GoogleSignInTrial extends AppCompatActivity {
 
@@ -38,6 +51,7 @@ public class GoogleSignInTrial extends AppCompatActivity {
     MainActivity mainActivity;
     LoginButton loginButton;
     CallbackManager callbackManager;
+    String username;
 
 
     @Override
@@ -59,20 +73,45 @@ public class GoogleSignInTrial extends AppCompatActivity {
             }
         });
 
+        ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+        assert am != null;
+        List<ActivityManager.RunningAppProcessInfo> list2= am.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo ti : list2) {
+
+            Log.i("IMPORTANCE CODE",String.valueOf(ti.importance));
+
+            if(ti.importance == 400){
+                LoginManager.getInstance().logOut();
+            }
+        }
+
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        final VideoView videoView =
+                (VideoView) findViewById(R.id.videoView1);
 
+        videoView.setVideoPath(
+                "https://www.ibm.com/watson/assets/duo/video/Watson_Avatar_Ambient-square-071817.mp4");
 
+        videoView.setOnPreparedListener (new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+            }
+        });
+
+        videoView.start();
 
         // Facebook sign in options
         callbackManager = CallbackManager.Factory.create();
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList("user_status"));
+        loginButton.setReadPermissions(Arrays.asList("user_status, user_posts"));
 
         // Callback registration
         loginButton.registerCallback(callbackManager,
@@ -83,8 +122,11 @@ public class GoogleSignInTrial extends AppCompatActivity {
 
                         Log.i("Success!!", loginResult.toString());
 
+
+
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
+
 
                                 new GraphRequest.GraphJSONObjectCallback() {
 
@@ -93,9 +135,13 @@ public class GoogleSignInTrial extends AppCompatActivity {
                                             JSONObject object,
                                             GraphResponse response) {
 
+
                                         Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
 
                                         try {
+//                                            UserInfo userInfo = new UserInfo();
+                                            UserInfo.setUsername(response.getJSONObject().get("name").toString());
+
                                             intent.putExtra("name", response.getJSONObject().get("name").toString());
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -109,6 +155,20 @@ public class GoogleSignInTrial extends AppCompatActivity {
                         parameters.putString("fields", "id,name,link");
                         request.setParameters(parameters);
                         request.executeAsync();
+
+                        new GraphRequest(
+                                AccessToken.getCurrentAccessToken(),
+                                "/me/feed",
+                                parameters,
+                                HttpMethod.GET,
+                                new GraphRequest.Callback() {
+                                    public void onCompleted(GraphResponse response) {
+                                        Log.i("Facebook Feed", response.toString());
+//                                        Log.i("Facebook Feed", response.getJSONObject().get("").toString());
+                                    }
+                                }
+                        ).executeAsync();
+
                     }
 
                     @Override
@@ -121,6 +181,8 @@ public class GoogleSignInTrial extends AppCompatActivity {
                         Log.i("Error!!", exception.toString());
                     }
                 });
+                                /* make the API call */
+
     }
 
 
@@ -133,15 +195,12 @@ public class GoogleSignInTrial extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
-        // WENT TO EAT -  FINISHED HERE
         // Facebook login
         if(loginButton.isEnabled()){
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
 
-        // Google sing in option
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+
         if (requestCode == 1) {
             // The Task returned from this call is always completed, no need to attach a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -167,17 +226,18 @@ public class GoogleSignInTrial extends AppCompatActivity {
         }
     }
 
-    public String getUsername()  {
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-        if (acct != null) {
-            String personName = acct.getDisplayName();
-            String personGivenName = acct.getGivenName();
-            String personFamilyName = acct.getFamilyName();
-            String personEmail = acct.getEmail();
-            String personId = acct.getId();
-            return personName;
-        }
-        return null;
-    }
+//
+//    public String getUsername()  {
+//        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+//        if (acct != null) {
+//            String personName = acct.getDisplayName();
+//            String personGivenName = acct.getGivenName();
+//            String personFamilyName = acct.getFamilyName();
+//            String personEmail = acct.getEmail();
+//            String personId = acct.getId();
+//            return personName;
+//        }
+//        return null;
+//    }
 
 }

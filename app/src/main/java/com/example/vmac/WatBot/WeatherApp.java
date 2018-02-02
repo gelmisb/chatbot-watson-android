@@ -135,7 +135,7 @@ public class WeatherApp extends AppCompatActivity implements
         getLastKnownLocation();
     }
 
-    public void speak(final String outMessage){
+    public void speak(final String outMessage) throws InterruptedException {
 
         Thread thread = new Thread(new Runnable() {
             public void run() {
@@ -149,6 +149,7 @@ public class WeatherApp extends AppCompatActivity implements
             }
         });
         thread.start();
+        Thread.sleep(100);
     }
 
 
@@ -221,6 +222,8 @@ public class WeatherApp extends AppCompatActivity implements
 
                 } catch (JSONException e){
                     Log.d("App", e.toString());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {

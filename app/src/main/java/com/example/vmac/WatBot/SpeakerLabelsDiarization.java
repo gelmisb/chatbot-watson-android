@@ -201,6 +201,5 @@ public class SpeakerLabelsDiarization {
 
     }
 
-
     private static CountDownLatch lock = new CountDownLatch(1);
 }

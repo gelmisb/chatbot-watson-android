@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
 
+
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,14 +131,12 @@ public class MainActivity extends AppCompatActivity {
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
         analytics_APIKEY = mContext.getString(R.string.mobileanalytics_apikey);
-        
+
 
         //Bluemix Mobile Analytics
         BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);
-        //Analytics is configured to record lifecycle events.
 
         Analytics.init(getApplication(), "Mia-Testing", analytics_APIKEY, false, Analytics.DeviceEvent.ALL);
-        //Analytics.send();
 
         myLogger = Logger.getLogger("myLogger");
         // Send recorded usage analytics to the Mobile Analytics Service
@@ -187,7 +186,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
         this.inputMessage.setText("");
         this.initialRequest = true;
+
         sendMessage();
+
 
 
         //Watson Text-to-Speech Service on Bluemix
@@ -233,14 +234,16 @@ public class MainActivity extends AppCompatActivity {
 
         }));
 
-        btnRecord.setOnClickListener(new View.OnClickListener() {
+        btnRecord.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
                 try {
                     recordMessage();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                return Boolean.parseBoolean(null);
             }
         });
 
@@ -248,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             if(checkInternetConnection()) {
-                sendMessage();
+                    sendMessage();
             }
             }
         });
@@ -263,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     streamPlayer = new StreamPlayer();
                     streamPlayer.playStream(textToSpeech.synthesize(outMessage, Voice.EN_ALLISON).execute());
+                    Thread.sleep(100);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -311,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Sending a message to Watson Conversation Service
-    private void sendMessage() {
+    public void sendMessage()  {
 
         final String inputmessage = this.inputMessage.getText().toString().trim();
 
@@ -393,13 +397,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 if(outMessage.getMessage().equals("Hello . How can I help you?"))
                                 {
-                                    outMessage.setMessage("Hello " + name + ", how could I assist you?");
-                                }
-
-
-                                if(outMessage.getMessage().equals("Would you like me to play music?"))
-                                {
-                                    outMessage.setMessage("Hello " + name + ", how could I help?");
+                                    outMessage.setMessage("Hello " + UserInfo.getUsername() + ", how could I assist you?");
                                 }
 
                                 Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
@@ -552,6 +550,11 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override public void run() {
                 inputMessage.setText(text);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -560,6 +563,11 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override public void run() {
                 btnRecord.setEnabled(true);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -569,6 +577,11 @@ public class MainActivity extends AppCompatActivity {
             @Override public void run() {
                 Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
     }
