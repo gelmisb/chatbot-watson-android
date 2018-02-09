@@ -48,10 +48,8 @@ import java.util.List;
 public class GoogleSignInTrial extends AppCompatActivity {
 
     GoogleSignInClient mGoogleSignInClient;
-    MainActivity mainActivity;
     LoginButton loginButton;
     CallbackManager callbackManager;
-    String username;
 
 
     @Override
@@ -59,38 +57,43 @@ public class GoogleSignInTrial extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in_trial);
 
-        // Google sign in options
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.sign_in_button:
-                        signIn();
-                        break;
-                }
-            }
-        });
-
-        ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-        assert am != null;
-        List<ActivityManager.RunningAppProcessInfo> list2= am.getRunningAppProcesses();
-        for (ActivityManager.RunningAppProcessInfo ti : list2) {
-
-            Log.i("IMPORTANCE CODE",String.valueOf(ti.importance));
-
-            if(ti.importance == 400){
-                LoginManager.getInstance().logOut();
-            }
+        if(isLoggedIn()){
+            Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
+            startActivity(intent);
         }
 
+//        // Google sign in options
+//        SignInButton signInButton = findViewById(R.id.sign_in_button);
+//        signInButton.setSize(SignInButton.SIZE_STANDARD);
+//        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                switch (view.getId()) {
+//                    case R.id.sign_in_button:
+//                        signIn();
+//                        break;
+//                }
+//            }
+//        });
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
+//        ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+//        assert am != null;
+//        List<ActivityManager.RunningAppProcessInfo> list2= am.getRunningAppProcesses();
+//        for (ActivityManager.RunningAppProcessInfo ti : list2) {
+//
+//            Log.i("IMPORTANCE CODE",String.valueOf(ti.importance));
+//
+//            if(ti.importance == 400){
+//                LoginManager.getInstance().logOut();
+//            }
+//        }
 
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+//
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestEmail()
+//                .build();
+
+//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         final VideoView videoView =
                 (VideoView) findViewById(R.id.videoView1);
@@ -120,7 +123,9 @@ public class GoogleSignInTrial extends AppCompatActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
 
-                        Log.i("Success!!", loginResult.toString());
+                        Log.i("Success!!", loginResult.getAccessToken().getApplicationId());
+                        Log.i("Logged in", "" + isLoggedIn());
+                        Log.i("Success!!3", loginResult.getAccessToken().getExpires().toString());
 
 
 
@@ -142,7 +147,7 @@ public class GoogleSignInTrial extends AppCompatActivity {
 //                                            UserInfo userInfo = new UserInfo();
                                             UserInfo.setUsername(response.getJSONObject().get("name").toString());
 
-                                            intent.putExtra("name", response.getJSONObject().get("name").toString());
+//                                            intent.putExtra("name", response.getJSONObject().get("name").toString());
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -185,6 +190,11 @@ public class GoogleSignInTrial extends AppCompatActivity {
 
     }
 
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
+
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -194,18 +204,18 @@ public class GoogleSignInTrial extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
 
         // Facebook login
-        if(loginButton.isEnabled()){
-            callbackManager.onActivityResult(requestCode, resultCode, data);
-        }
+//        if(loginButton.isEnabled()){
+//        }
 
 
-        if (requestCode == 1) {
-            // The Task returned from this call is always completed, no need to attach a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
+//        if (requestCode == 1) {
+//            // The Task returned from this call is always completed, no need to attach a listener.
+//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+//            handleSignInResult(task);
+//        }
     }
 
 
