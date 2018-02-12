@@ -11,6 +11,8 @@
     <string name="no_address_found">Address not found</string>
     <string name="address_found">Address successfully recovered</string>
     <string name="no_geocoder_available">No geocoder object exists</string>
+    <string name="natural_language_understanding_username"></string>
+    <string name="natural_language_understanding_password"></string>
 
 
     <!-- Strings related to login -->

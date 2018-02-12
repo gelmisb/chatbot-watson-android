@@ -39,6 +39,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -168,8 +169,17 @@ public class GoogleSignInTrial extends AppCompatActivity {
                                 HttpMethod.GET,
                                 new GraphRequest.Callback() {
                                     public void onCompleted(GraphResponse response) {
-                                        Log.i("Facebook Feed", response.toString());
-//                                        Log.i("Facebook Feed", response.getJSONObject().get("").toString());
+                                        JSONObject fd = response.getJSONObject();
+                                        try {
+                                            Object info = fd.get("data");
+//                                            Log.i("Facebook data", fd.get("data").);
+
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+//                                            Log.i("Facebook Feed", response.getJSONObject().get("name").toString());
+                                        //                                        Log.i("Facebook Feed", response.getJSONObject().get("").toString());
                                     }
                                 }
                         ).executeAsync();
