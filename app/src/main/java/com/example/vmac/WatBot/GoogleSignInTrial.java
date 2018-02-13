@@ -1,24 +1,11 @@
 package com.example.vmac.WatBot;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Application;
-import android.content.ComponentName;
-import android.content.Context;
+
+import android.content.ComponentCallbacks2;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.VideoView;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -27,26 +14,20 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.List;
 
-public class GoogleSignInTrial extends AppCompatActivity {
+public class GoogleSignInTrial extends AppCompatActivity implements ComponentCallbacks2 {
 
     GoogleSignInClient mGoogleSignInClient;
     LoginButton loginButton;
@@ -60,56 +41,11 @@ public class GoogleSignInTrial extends AppCompatActivity {
 
         if(isLoggedIn()){
             Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         }
 
-//        // Google sign in options
-//        SignInButton signInButton = findViewById(R.id.sign_in_button);
-//        signInButton.setSize(SignInButton.SIZE_STANDARD);
-//        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                switch (view.getId()) {
-//                    case R.id.sign_in_button:
-//                        signIn();
-//                        break;
-//                }
-//            }
-//        });
-
-//        ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-//        assert am != null;
-//        List<ActivityManager.RunningAppProcessInfo> list2= am.getRunningAppProcesses();
-//        for (ActivityManager.RunningAppProcessInfo ti : list2) {
-//
-//            Log.i("IMPORTANCE CODE",String.valueOf(ti.importance));
-//
-//            if(ti.importance == 400){
-//                LoginManager.getInstance().logOut();
-//            }
-//        }
-
-//
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestEmail()
-//                .build();
-
-//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        final VideoView videoView =
-                (VideoView) findViewById(R.id.videoView1);
-
-        videoView.setVideoPath(
-                "https://www.ibm.com/watson/assets/duo/video/Watson_Avatar_Ambient-square-071817.mp4");
-
-        videoView.setOnPreparedListener (new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.setLooping(true);
-            }
-        });
-
-        videoView.start();
 
         // Facebook sign in options
         callbackManager = CallbackManager.Factory.create();
@@ -124,10 +60,10 @@ public class GoogleSignInTrial extends AppCompatActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
 
-                        Log.i("Success!!", loginResult.getAccessToken().getApplicationId());
-                        Log.i("Logged in", "" + isLoggedIn());
-                        Log.i("Success!!3", loginResult.getAccessToken().getExpires().toString());
-
+//                        Log.i("Success!!", loginResult.getAccessToken().getApplicationId());
+//                        Log.i("Logged in", "" + isLoggedIn());
+//                        Log.i("Success!!3", loginResult.getAccessToken().getExpires().toString());
+//
 
 
                         GraphRequest request = GraphRequest.newMeRequest(
@@ -143,6 +79,8 @@ public class GoogleSignInTrial extends AppCompatActivity {
 
 
                                         Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
                                         try {
 //                                            UserInfo userInfo = new UserInfo();
@@ -216,16 +154,6 @@ public class GoogleSignInTrial extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
-        // Facebook login
-//        if(loginButton.isEnabled()){
-//        }
-
-
-//        if (requestCode == 1) {
-//            // The Task returned from this call is always completed, no need to attach a listener.
-//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-//            handleSignInResult(task);
-//        }
     }
 
 
@@ -246,18 +174,66 @@ public class GoogleSignInTrial extends AppCompatActivity {
         }
     }
 
-//
-//    public String getUsername()  {
-//        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-//        if (acct != null) {
-//            String personName = acct.getDisplayName();
-//            String personGivenName = acct.getGivenName();
-//            String personFamilyName = acct.getFamilyName();
-//            String personEmail = acct.getEmail();
-//            String personId = acct.getId();
-//            return personName;
-//        }
-//        return null;
-//    }
+
+    /**
+     * Release memory when the UI becomes hidden or when system resources become low.
+     * @param level the memory-related event that was raised.
+     */
+    public void onTrimMemory(int level) {
+
+        // Determine which lifecycle or system event was raised.
+        switch (level) {
+
+            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+
+                /*
+                   Release any UI objects that currently hold memory.
+
+                   The user interface has moved to the background.
+                */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+
+                /*
+                   Release any memory that your app doesn't need to run.
+
+                   The device is running low on memory while the app is running.
+                   The event raised indicates the severity of the memory-related event.
+                   If the event is TRIM_MEMORY_RUNNING_CRITICAL, then the system will
+                   begin killing background processes.
+                */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+
+                /*
+                   Release as much memory as the process can.
+
+                   The app is on the LRU list and the system is running low on memory.
+                   The event raised indicates where the app sits within the LRU list.
+                   If the event is TRIM_MEMORY_COMPLETE, the process will be one of
+                   the first to be terminated.
+                */
+
+                break;
+
+            default:
+                /*
+                  Release any non-critical data structures.
+
+                  The app received an unrecognized memory level value
+                  from the system. Treat this as a generic low-memory message.
+                */
+                break;
+        }
+    }
+
 
 }

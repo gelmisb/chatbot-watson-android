@@ -1,7 +1,7 @@
 package com.example.vmac.WatBot;
 
-import android.*;
 import android.Manifest;
+import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +23,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +39,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.login.LoginManager;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -70,10 +71,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainScreenTime extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ComponentCallbacks2 {
 
-    public TextView welcomeUser;
-    public Button weatherButton, botSpeak, news, media;
+    public Button weatherButton, botSpeak, news;
     private ImageButton recordingButton;
 
     private RecyclerView recyclerView;
@@ -90,9 +90,6 @@ public class MainScreenTime extends AppCompatActivity implements
     private static final int RECORD_REQUEST_CODE = 101;
 
     StreamPlayer streamPlayer;
-
-    private ImageButton btnSend;
-    private ImageButton btnRecord;
 
     private MicrophoneInputStream capture;
     private EditText inputMessage;
@@ -128,6 +125,17 @@ public class MainScreenTime extends AppCompatActivity implements
         setContentView(R.layout.activity_main_screen_time);
         mContext = getApplicationContext();
 
+
+        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoginManager.getInstance().logOut();
+                Intent intent = new Intent(getApplicationContext(), GoogleSignInTrial.class);
+                startActivity(intent);
+            }
+        });
+
         conversation_username = "98e3168d-7c24-4958-81f2-aaa303ab9775";
         conversation_password = "A3CCaGkbrBi5";
         STT_username = "3b09c22d-6681-4a51-b070-1b17a29859d7";
@@ -146,8 +154,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
 
         inputMessage = (EditText) findViewById(R.id.message);
-        btnSend = (ImageButton) findViewById(R.id.btn_send);
-        btnRecord= (ImageButton) findViewById(R.id.btn_record);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
 
@@ -188,11 +194,7 @@ public class MainScreenTime extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
 
-                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-                if (vibe != null) {
-                    vibe.vibrate(150);
-                }
                 Intent intent = new Intent(getApplicationContext(), News.class);
                 startActivity(intent);
             }
@@ -209,11 +211,11 @@ public class MainScreenTime extends AppCompatActivity implements
         weatherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-                if (vibe != null) {
-                    vibe.vibrate(150);
-                }
+//                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+//
+//                if (vibe != null) {
+//                    vibe.vibrate(150);
+//                }
                 Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
                 startActivity(intent);
             }
@@ -785,6 +787,67 @@ public class MainScreenTime extends AppCompatActivity implements
                 }
             }
         });
+    }
+
+
+    /**
+     * Release memory when the UI becomes hidden or when system resources become low.
+     * @param level the memory-related event that was raised.
+     */
+    public void onTrimMemory(int level) {
+
+        // Determine which lifecycle or system event was raised.
+        switch (level) {
+
+            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+
+                /*
+                   Release any UI objects that currently hold memory.
+
+                   The user interface has moved to the background.
+                */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+
+                /*
+                   Release any memory that your app doesn't need to run.
+
+                   The device is running low on memory while the app is running.
+                   The event raised indicates the severity of the memory-related event.
+                   If the event is TRIM_MEMORY_RUNNING_CRITICAL, then the system will
+                   begin killing background processes.
+                */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+
+                /*
+                   Release as much memory as the process can.
+
+                   The app is on the LRU list and the system is running low on memory.
+                   The event raised indicates where the app sits within the LRU list.
+                   If the event is TRIM_MEMORY_COMPLETE, the process will be one of
+                   the first to be terminated.
+                */
+
+                break;
+
+            default:
+                /*
+                  Release any non-critical data structures.
+
+                  The app received an unrecognized memory level value
+                  from the system. Treat this as a generic low-memory message.
+                */
+                break;
+        }
     }
 
 

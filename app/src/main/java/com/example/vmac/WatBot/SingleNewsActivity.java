@@ -51,12 +51,12 @@ public class SingleNewsActivity extends AppCompatActivity {
 
 
         String imageUrl = article.getImageURL();
-        new GetImage().execute(imageUrl,imageUrl,imageUrl);
+        new GetImage().execute(imageUrl,null,null);
 
     }
 
 
-    class GetImage extends AsyncTask<String, String, String> {
+    private class GetImage extends AsyncTask<String, String, String> {
 
         URL url;
 

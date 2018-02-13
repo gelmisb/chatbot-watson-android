@@ -7,9 +7,9 @@
     <color name="bg_bubble_watbot">#ecf0f1</color>
     <color name="backgroundColour">#004d99</color>
 
-    <color name="firstOne">#cce6ff</color>
-    <color name="secondOne">#80c1ff</color>
-    <color name="thirdOne">#4da9ff</color>
+    <color name="firstOne">#4db8ff</color>
+    <color name="secondOne">#008ae6</color>
+    <color name="thirdOne">#004d80</color>
 
     <color name="black_overlay">#0066cc</color>
 </resources>

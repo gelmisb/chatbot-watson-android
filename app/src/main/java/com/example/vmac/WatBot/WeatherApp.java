@@ -60,6 +60,7 @@ public class WeatherApp extends AppCompatActivity implements
     private String TTS_username;
     private String TTS_password;
     private String mAddressOutput;
+    private  TextView weather, realF, dow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,13 +128,6 @@ public class WeatherApp extends AppCompatActivity implements
                 });
     }
 
-    public void updateLocation (View view){
-        Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibe != null) {
-            vibe.vibrate(200);
-        }
-        getLastKnownLocation();
-    }
 
     public void speak(final String outMessage) throws InterruptedException {
 
@@ -149,22 +143,12 @@ public class WeatherApp extends AppCompatActivity implements
             }
         });
         thread.start();
-        Thread.sleep(100);
     }
 
 
     private void updateUI(){
 
         String url = "https://09ddab72-92bc-4c73-8eeb-994f8c7b9e64:LoR8rebnJL@twcservice.eu-gb.mybluemix.net/api/weather/v1/geocode/" + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude() + "/forecast/hourly/48hour.json";
-
-        // Different types of weather configurations are available
-        // The common and most practical is used which is the 48hour option
-        //
-        //        /v1/geocode/{latitude}/{longitude}/forecast/daily/3day.json
-        //        /v1/geocode/{latitude}/{longitude}/forecast/hourly/48hour.json
-        //
-        //
-
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
 
@@ -173,7 +157,6 @@ public class WeatherApp extends AppCompatActivity implements
 
                 try{
                     JSONObject weatherObject = new JSONObject(response);
-                    //JSONObject observation = weatherObject.getJSONObject("forecasts");
                     JSONArray metadata = weatherObject.getJSONArray("forecasts");
                     JSONObject fd = metadata.getJSONObject(0);
                     int temp = fd.getInt("temp");
@@ -193,21 +176,19 @@ public class WeatherApp extends AppCompatActivity implements
                     String imageloc= "icon" + fd.getString("icon_code");
 
 
-
                     ImageView imageView = (ImageView) findViewById(R.id.imageView);
-
 
 
                     int id  = getBaseContext().getResources().getIdentifier(imageloc, "drawable", getBaseContext().getPackageName());
                     imageView.setImageResource(id);
 
-                    TextView weather = (TextView) findViewById(R.id.weather);
+                    weather = (TextView) findViewById(R.id.weather);
                     weather.setText("Current temperature: " + currentWeather);
 
-                    TextView realF = (TextView) findViewById(R.id.realTemp);
+                    realF = (TextView) findViewById(R.id.realTemp);
                     realF.setText("Real Feel: " + nearly2 + "°C");
 
-                    TextView dow = (TextView)findViewById(R.id.dow);
+                    dow = (TextView)findViewById(R.id.dow);
                     dow.setText(fd.getString("dow"));
 
                     String theSpokenString = "In your area - currently, it's, " + nearly  + "°C " + fd.getString("phrase_22char") +  " Where it's "  +fd.getString("clds") + "% are cloud coverage and " +fd.getString("rh") + "% humidity - it currently feels like "  + nearly2 + "°C";
@@ -217,7 +198,7 @@ public class WeatherApp extends AppCompatActivity implements
                     }
 
                     if(fd.getInt("pop") > 0 ){
-                        speak(theSpokenString + "There is a probability of " + fd.getString("precip_type") + " which is " + fd.getInt("pop") + "- - Maybe you'd like to grab a coat just in case?");
+                        speak(theSpokenString + "There is a probability of " + fd.getString("precip_type") + " of " + fd.getInt("pop") + " percent - - Maybe you'd like to grab a coat just in case?");
                     }
 
                 } catch (JSONException e){
@@ -253,6 +234,8 @@ public class WeatherApp extends AppCompatActivity implements
 
     protected void startIntentService() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
         startService(intent);

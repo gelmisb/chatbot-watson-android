@@ -7,7 +7,9 @@
     <item>
         <bitmap
             android:src="@mipmap/backgriound"/>
+
     </item>
 
 
 </layer-list>
+
