@@ -16,7 +16,7 @@
         android:visibility="gone" />
 
     <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button2"
+        android:id="@+id/login_button"
         android:layout_width="80dp"
         android:layout_height="55dp"
         android:layout_gravity="end"
@@ -34,19 +34,19 @@
         android:id="@+id/NewsLayout"
         android:layout_width="match_parent"
         android:layout_height="125dp"
-        android:layout_marginBottom="216dp"
-        android:background="@color/common_google_signin_btn_text_light_default"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:layout_marginBottom="8dp"
+        android:background="@color/cast_intro_overlay_background_color"
+        app:layout_constraintBottom_toBottomOf="@+id/record_button"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ChatbotLayout"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.762">
 
         <LinearLayout
             android:id="@+id/linearLayout6"
             android:layout_width="match_parent"
-            android:layout_height="38dp"
+            android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:gravity="center"
@@ -61,22 +61,22 @@
             <Button
                 android:id="@+id/newsBtn"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="100dp"
                 android:background="@android:drawable/menuitem_background"
-                android:text="News" />
+                android:paddingRight="20dp"
+                android:textAlignment="textEnd" />
         </LinearLayout>
 
         <ImageView
             android:id="@+id/imageView4"
-            android:layout_width="282dp"
-            android:layout_height="90dp"
+            android:layout_width="103dp"
+            android:layout_height="83dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.075"
+            app:layout_constraintHorizontal_bias="0.062"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.16"
-            app:srcCompat="@drawable/irishtimeslogo" />
+            app:srcCompat="@drawable/irishtimes" />
 
         <TextView
             android:id="@+id/textView4"
@@ -84,26 +84,30 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginStart="36dp"
+            android:layout_marginStart="140dp"
             android:layout_marginTop="8dp"
             android:text="Check the latest news"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView4"
-            app:layout_constraintVertical_bias="0.526" />
+            app:layout_constraintVertical_bias="0.45" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/ChatbotLayout"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:layout_marginTop="196dp"
-        android:background="@color/common_google_signin_btn_text_light_default"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:layout_height="125dp"
+        android:layout_marginTop="-8dp"
+        android:background="@color/cast_intro_overlay_background_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/NewsLayout"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="@+id/NewsLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside">
 
         <LinearLayout
             android:id="@+id/linearLayout5"
@@ -122,9 +126,10 @@
             <Button
                 android:id="@+id/talkBtn"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="100dp"
                 android:background="@android:drawable/menuitem_background"
-                android:text="Talk" />
+                android:paddingRight="20dp"
+                android:textAlignment="textEnd" />
         </LinearLayout>
 
         <TextView
@@ -136,40 +141,39 @@
             android:text="Chat with Watson's Intelligent agent"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.846"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.086" />
+            app:layout_constraintVertical_bias="0.09" />
 
         <TextView
             android:id="@+id/welcomePhrase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:text='"Hi user, how could I help?"'
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout5"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.732"
+            app:layout_constraintHorizontal_bias="0.639"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintStart_toStartOf="@+id/imageView2"
-            app:layout_constraintVertical_bias="0.984" />
+            app:layout_constraintTop_toTopOf="@+id/linearLayout5" />
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="66dp"
+            android:layout_width="74dp"
             android:layout_height="88dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="284dp"
+            android:layout_marginEnd="268dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.409"
+            app:layout_constraintVertical_bias="0.476"
             app:srcCompat="@drawable/ai_faze" />
     </android.support.constraint.ConstraintLayout>
 
@@ -177,13 +181,17 @@
         android:id="@+id/WeatherLayout"
         android:layout_width="match_parent"
         android:layout_height="125dp"
-        android:background="@color/common_google_signin_btn_text_light_default"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/cast_intro_overlay_background_color"
+        app:layout_constraintBottom_toBottomOf="@+id/record_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.171">
+        app:layout_constraintVertical_bias="0.239">
 
         <LinearLayout
             android:id="@+id/linearLayout2"
@@ -192,7 +200,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:layout_weight="3"
-            android:gravity="center"
+            android:gravity="right|center_horizontal|center"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -204,9 +212,10 @@
             <Button
                 android:id="@+id/buttonWeather"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="100dp"
                 android:background="@android:drawable/menuitem_background"
-                android:text="Details" />
+                android:paddingRight="20dp"
+                android:textAlignment="textEnd" />
 
         </LinearLayout>
 
@@ -217,7 +226,7 @@
             android:layout_marginStart="176dp"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:gravity="right"
+            android:gravity="center"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -239,7 +248,9 @@
                 android:id="@+id/tempText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawableBottom="@drawable/bg_bubble_self"
                 android:text="--Phrase--"
+                android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
 
@@ -263,8 +274,8 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="74dp"
+                android:layout_height="match_parent"
                 app:srcCompat="@color/cardview_shadow_end_color" />
 
             <TextView
