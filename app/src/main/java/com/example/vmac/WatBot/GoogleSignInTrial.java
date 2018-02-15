@@ -17,11 +17,6 @@ import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,10 +24,8 @@ import java.util.Arrays;
 
 public class GoogleSignInTrial extends AppCompatActivity implements ComponentCallbacks2 {
 
-    GoogleSignInClient mGoogleSignInClient;
     LoginButton loginButton;
     CallbackManager callbackManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,48 +46,51 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("user_status, user_posts"));
 
+
         // Callback registration
         loginButton.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
 
+
+                    /**
+                     * When user logs in successfully this method is called
+                       @param loginResult
+                     */
                     @Override
                     public void onSuccess(LoginResult loginResult) {
 
-//                        Log.i("Success!!", loginResult.getAccessToken().getApplicationId());
-//                        Log.i("Logged in", "" + isLoggedIn());
-//                        Log.i("Success!!3", loginResult.getAccessToken().getExpires().toString());
-//
-
-
+                        // Retrieving access token for login result
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
 
 
                                 new GraphRequest.GraphJSONObjectCallback() {
 
+                                    // When the GraphRequest is successfully retrieved
+                                    // Set users name and extract Facebook feed
                                     @Override
                                     public void onCompleted(
                                             JSONObject object,
                                             GraphResponse response) {
 
-
-                                        Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
+                                        // Try and set the username
                                         try {
-//                                            UserInfo userInfo = new UserInfo();
                                             UserInfo.setUsername(response.getJSONObject().get("name").toString());
-
-//                                            intent.putExtra("name", response.getJSONObject().get("name").toString());
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
 
+                                        // When all the actions are completed transfer the user to the Main Menu
+                                        Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                         startActivity(intent);
                                     }
                                 });
 
+                        // This is for getting user's feed
+                        // When user logs in this is retrieved and analysed
+                        // Stored in a flash memory
                         Bundle parameters = new Bundle();
                         parameters.putString("fields", "id,name,link");
                         request.setParameters(parameters);
@@ -110,14 +106,9 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                         JSONObject fd = response.getJSONObject();
                                         try {
                                             Object info = fd.get("data");
-//                                            Log.i("Facebook data", fd.get("data").);
-
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
-
-//                                            Log.i("Facebook Feed", response.getJSONObject().get("name").toString());
-                                        //                                        Log.i("Facebook Feed", response.getJSONObject().get("").toString());
                                     }
                                 }
                         ).executeAsync();
@@ -134,44 +125,19 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                         Log.i("Error!!", exception.toString());
                     }
                 });
-                                /* make the API call */
-
     }
 
+    // Method for checking if the user has logged in
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }
 
 
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, 1);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
-    }
-
-
-
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            // Signed in successfully, show authenticated UI.
-            Intent intent = new Intent(this, MainScreenTime.class);
-            intent.putExtra("name", account.getDisplayName());
-            startActivity(intent);
-
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w("Tag", "signInResult:failed code=" + e.getStatusCode());
-        }
     }
 
 
@@ -234,6 +200,4 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                 break;
         }
     }
-
-
 }

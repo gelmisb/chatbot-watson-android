@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/include"
-        layout="@layout/content_chat_room"
+        layout="@layout/content_chat_room1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone" />

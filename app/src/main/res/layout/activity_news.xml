@@ -12,12 +12,14 @@
         style="@style/Widget.AppCompat.ListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/cast_intro_overlay_background_color"
+        android:background="@color/cast_expanded_controller_ad_label_background_color"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
 
     </ListView>

@@ -9,10 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,19 +18,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
-import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.ibm.mobilefirstplatform.clientsdk.android.analytics.api.Analytics;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
@@ -46,25 +39,17 @@ import com.ibm.watson.developer_cloud.android.library.audio.utils.ContentType;
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
-import com.ibm.watson.developer_cloud.discovery.v1.Discovery;
-import com.ibm.watson.developer_cloud.discovery.v1.model.document.CreateDocumentRequest;
-import com.ibm.watson.developer_cloud.discovery.v1.model.document.CreateDocumentResponse;
-import com.ibm.watson.developer_cloud.http.HttpMediaType;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeakerLabel;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.websocket.RecognizeCallback;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 
 import org.json.JSONObject;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import static com.ibm.watson.developer_cloud.android.library.audio.MicrophoneHelper.REQUEST_PERMISSION;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -99,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
     private String analytics_APIKEY;
     private SpeakerLabelsDiarization.RecoTokens recoTokens;
     private MicrophoneHelper microphoneHelper;
-    private GoogleAccountCredential googleAccountCredential;
-    private GoogleSignInTrial googleSignInTrial;
     private ComponentName cn;
 
 
@@ -234,25 +217,22 @@ public class MainActivity extends AppCompatActivity {
 
         }));
 
-        btnRecord.setOnTouchListener(new View.OnTouchListener() {
+        btnSend.setOnClickListener(new View.OnClickListener(){
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public void onClick(View v) {
+                if(checkInternetConnection()) {
+                    sendMessage();
+                }
+            }
+        });
+
+        btnRecord.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
                 try {
                     recordMessage();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                return Boolean.parseBoolean(null);
-            }
-        });
-
-        btnSend.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-            if(checkInternetConnection()) {
-                    sendMessage();
-            }
             }
         });
 
@@ -368,11 +348,8 @@ public class MainActivity extends AppCompatActivity {
                 MessageRequest newMessage = new MessageRequest.Builder().inputText(inputmessage).context(context).build();
                 MessageResponse response = service.message(workspace_id, newMessage).execute();
 
-                String name = getIntent().getStringExtra("name");
-
                 //Passing Context of last conversation
-                if(response.getContext() !=null)
-                {
+                if(response.getContext() !=null) {
                     context.clear();
                     context = response.getContext();
                     Log.i("context", "  "  + context + " ");
@@ -504,13 +481,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onTranscription(SpeechResults speechResults) {
             //TODO: Uncomment this to enable Speaker Diarization
-            /*recoTokens = new SpeakerLabelsDiarization.RecoTokens();
+            recoTokens = new SpeakerLabelsDiarization.RecoTokens();
             if(speechResults.getSpeakerLabels() !=null)
             {
                 recoTokens.add(speechResults);
                 Log.i("SPEECHRESULTS",speechResults.getSpeakerLabels().get(0).toString());
 
-            }*/
+            }
             if(speechResults.getResults() != null && !speechResults.getResults().isEmpty()) {
                 String text = speechResults.getResults().get(0).getAlternatives().get(0).getTranscript();
                 showMicText(text);

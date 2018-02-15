@@ -6,8 +6,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
@@ -48,6 +51,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.ibm.mobilefirstplatform.clientsdk.android.analytics.api.Analytics;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
+import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
+import com.ibm.mobilefirstplatform.clientsdk.android.logger.api.Logger;
 import com.ibm.watson.developer_cloud.android.library.audio.MicrophoneHelper;
 import com.ibm.watson.developer_cloud.android.library.audio.MicrophoneInputStream;
 import com.ibm.watson.developer_cloud.android.library.audio.StreamPlayer;
@@ -76,48 +81,46 @@ public class MainScreenTime extends AppCompatActivity implements
     public Button weatherButton, botSpeak, news;
     private ImageButton recordingButton;
 
+    private FusedLocationProviderClient mFusedLocationClient;
+    protected Location mLastLocation;
+    private AddressResultReceiver mResultReceiver = new AddressResultReceiver(new Handler());
+    private String mAddressOutput;
+
+
+    // TESTING THROUGH WILL CAUSE A MEM-LEEK
+    // Continue from here
+
     private RecyclerView recyclerView;
     private ChatAdapter mAdapter;
-
-    private SpeechToText speechService;
-    private MicrophoneHelper microphoneHelper;
-
-    private boolean listening = false;
+    private ArrayList messageArrayList;
+    private EditText inputMessage;
+    private ImageButton btnSend;
+    private ImageButton btnRecord;
+    private Map<String,Object> context = new HashMap<>();
+    StreamPlayer streamPlayer;
     private boolean initialRequest;
     private boolean permissionToRecordAccepted = false;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     private static String TAG = "MainActivity";
     private static final int RECORD_REQUEST_CODE = 101;
 
-    StreamPlayer streamPlayer;
-
+    private boolean listening = false;
+    private SpeechToText speechService;
+    private TextToSpeech textToSpeech;
     private MicrophoneInputStream capture;
-    private EditText inputMessage;
+    private Logger myLogger;
     private Context mContext;
-    private ComponentName cn;
-
+    private String workspace_id;
     private String conversation_username;
     private String conversation_password;
     private String STT_username;
     private String STT_password;
-    private String workspace_id;
     private String TTS_username;
     private String TTS_password;
     private String analytics_APIKEY;
-
-
-    private TextToSpeech textToSpeech;
-
-
-    private Map<String,Object> context = new HashMap<>();
-
-    private FusedLocationProviderClient mFusedLocationClient;
-    protected Location mLastLocation;
-    private AddressResultReceiver mResultReceiver = new AddressResultReceiver(new Handler());
-    private String mAddressOutput;
-    private GoogleSignInTrial googleSignInTrial;
-    private ArrayList messageArrayList;
-
+    private SpeakerLabelsDiarization.RecoTokens recoTokens;
+    private MicrophoneHelper microphoneHelper;
+    private ComponentName cn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +128,8 @@ public class MainScreenTime extends AppCompatActivity implements
         setContentView(R.layout.activity_main_screen_time);
         mContext = getApplicationContext();
 
-
+        // A logout button for the user to log out whenever they need to
+        // When user logs out it will bring them to the sign in screen to be authenticated again
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,113 +140,121 @@ public class MainScreenTime extends AppCompatActivity implements
             }
         });
 
+        // All the username and passwords for IBm Bluemix services
+
+        // IBM Bluemix Watson Conversation
         conversation_username = "98e3168d-7c24-4958-81f2-aaa303ab9775";
         conversation_password = "A3CCaGkbrBi5";
+
+        // IBM Bluemix Watson Speech - To - Text
         STT_username = "3b09c22d-6681-4a51-b070-1b17a29859d7";
         STT_password = "CFJcDBkcbC4G";
+
+        // // IBM Bluemix Workspace for conversation
         workspace_id = "66a84a01-8b2e-4ec3-8b9f-c80ceeb6d707";
+
+        // IBM Bluemix Watson Text - to - Speech service
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
 
+        // IBM Bluemix Watson Analytics for any request problems
         analytics_APIKEY = mContext.getString(R.string.mobileanalytics_apikey);
-
 
         //Bluemix Mobile Analytics
         BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);
-
         Analytics.init(getApplication(), "Mia-Testing", analytics_APIKEY, false, Analytics.DeviceEvent.ALL);
 
+        // Logger looks through and makes sure this is recorded
+        myLogger = Logger.getLogger("myLogger");
 
+        // Send recorded usage analytics to the Mobile Analytics Service
+        Analytics.send(new ResponseListener() {
+            @Override
+            public void onSuccess(com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response response) {
+                // Handle Analytics send success here.
+                Log.i("Analytics", "Success");
+            }
+
+            @Override
+            public void onFailure(com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response response, Throwable throwable, JSONObject jsonObject) {
+                // Handle Analytics send failure here.
+                Log.i("Analytics", "Failure");
+            }
+        });
+
+        // Send logs to the Mobile Analytics Service
+        Logger.send(new ResponseListener() {
+            @Override
+            public void onSuccess(com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response response) {
+                Log.i("Logger", "Success");
+                // Handle Logger send success here.
+            }
+
+            @Override
+            public void onFailure(com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response response, Throwable throwable, JSONObject jsonObject) {
+                // Handle Logger send failure here.
+                Log.i("Logger", "Failure");
+            }
+        });
+
+
+
+        // User input params initialisation
         inputMessage = (EditText) findViewById(R.id.message);
+        btnSend = (ImageButton) findViewById(R.id.btn_send);
+        btnRecord= (ImageButton) findViewById(R.id.btn_record);
+
+        // Custom font for the application
+        String customFont = "Montserrat-Regular.ttf";
+        Typeface typeface = Typeface.createFromAsset(getAssets(), customFont);
+        inputMessage.setTypeface(typeface);
+
+        // View for showing everything
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-
+        // Arraylist of messages between the AI and the user
         messageArrayList = new ArrayList<>();
+
+        // ArrayList message adapter
         mAdapter = new ChatAdapter(messageArrayList);
+
+        // Microphone helper to activate the recording
         microphoneHelper = new MicrophoneHelper(this);
 
+        // Layout manager configuration with the recycler
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
+
         this.inputMessage.setText("");
         this.initialRequest = true;
 
+        // Sending the initial welcoming message
         sendMessage();
 
-        int permission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            Log.i("Tagging", "Permission to record denied");
-            makeRequest();
-        }
 
 
         //Watson Text-to-Speech Service on Bluemix
         textToSpeech = new TextToSpeech();
         textToSpeech.setUsernameAndPassword(TTS_username, TTS_password);
 
+        // Checking user permissions that the audio can be recorded and used
+        int permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO);
 
-        weatherButton = (Button) findViewById(R.id.buttonWeather);
-        botSpeak = (Button) findViewById(R.id.talkBtn);
-        news = (Button) findViewById(R.id.newsBtn);
-        recordingButton = (ImageButton) findViewById(R.id.record_button);
-
-        news.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                Intent intent = new Intent(getApplicationContext(), News.class);
-                startActivity(intent);
-            }
-        });
-
-        botSpeak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        weatherButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-//
-//                if (vibe != null) {
-//                    vibe.vibrate(150);
-//                }
-                Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
-                startActivity(intent);
-            }
-        });
-
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        getLastKnownLocation();
-
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            } else {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            }
+        // If permissions have been denied by the user
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.i("Tagging", "Permission to record denied");
+            makeRequest();
         }
 
+
+        // Touch listener for the recycler view tf the user wants to hear the message
+        // That has been sent again wither from the Ai or from the user itself
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
+
             @Override
             public void onClick(View view, final int position) {
                 Thread thread = new Thread(new Runnable() {
@@ -269,8 +281,102 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onLongClick(View view, int position) {
 
             }
-
         }));
+//
+//        // Touch listener for the UI buttons for the communication with the user
+//        btnSend.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                if(checkInternetConnection()) {
+//                    sendMessage();
+//                }
+//            }
+//        });
+//
+//
+//        btnRecord.setOnClickListener(new View.OnClickListener() {
+//            @Override public void onClick(View v) {
+//                try {
+//                    recordMessage();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+
+
+
+
+        // UI initialisation for all the components on the screen
+
+        // Weather screen
+        weatherButton = (Button) findViewById(R.id.buttonWeather);
+
+        // Watson conversation AI communication and messaging screen
+        botSpeak = (Button) findViewById(R.id.talkBtn);
+
+        // Checking the latest news
+        news = (Button) findViewById(R.id.newsBtn);
+
+        // Recording button with a touch listener
+        recordingButton = (ImageButton) findViewById(R.id.record_button);
+
+        inputMessage = (EditText) findViewById(R.id.message);
+        btnSend = (ImageButton) findViewById(R.id.btn_send);
+        btnRecord= (ImageButton) findViewById(R.id.btn_record);
+
+
+        // News button listener action
+        news.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), News.class);
+                startActivity(intent);
+            }
+        });
+
+        // Watson conversation view button listener action
+        botSpeak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Weather button listener action
+        weatherButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
+                startActivity(intent);
+            }
+        });
+
+        // getting the last location on the application
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Last known location called to update the UI when the screen is launched
+        getLastKnownLocation();
+
+
+        // Here, thisActivity is the current activity
+        // Checking if all the permissions have been granted
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+            } else {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
+
 
 
         recordingButton.setOnTouchListener(new View.OnTouchListener() {
@@ -279,7 +385,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     try {
-                        listening = true;
                         recordMessage();
 
                     } catch (InterruptedException e) {
@@ -289,18 +394,17 @@ public class MainScreenTime extends AppCompatActivity implements
                 }
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-//                    listening = false;
                     try {
-                        microphoneHelper.closeInputStream();
-                        Toast.makeText(getApplicationContext(),"Stopped Listening....Click to Start", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
+                        recordMessage();
+                        sendMessage();
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
 
-                    sendMessage();
+
                     Log.i("Key", "Key event up " + motionEvent);
-                    Log.i("Message", "The " + inputMessage.getText());
+                    Log.i("Message", " " + inputMessage.getText());
 
                 }
 
@@ -308,8 +412,33 @@ public class MainScreenTime extends AppCompatActivity implements
             }
         });
 
+
     }
 
+    /**
+     * For the AI - to - user communication
+     * using the streamPlayer for the audio
+     * where the action is threaded to reserve memory resources
+     * @param outMessage
+     */
+    public void speak(final String outMessage){
+
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+
+                try {
+                    streamPlayer = new StreamPlayer();
+                    streamPlayer.playStream(textToSpeech.synthesize(outMessage, Voice.EN_ALLISON).execute());
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
+
+    }
 
 
     // Speech-to-Text Record Audio permission
@@ -343,6 +472,9 @@ public class MainScreenTime extends AppCompatActivity implements
 
     }
 
+    /**
+     * Making Audio requests
+     */
     protected void makeRequest() {
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.RECORD_AUDIO},
@@ -350,194 +482,9 @@ public class MainScreenTime extends AppCompatActivity implements
     }
 
 
-    public void getLastKnownLocation() {
-        Log.i("Button called", "getLastKnownLocation");
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            Log.i("Button called", "mFusedLocationClient");
-
-            return;
-        }
-
-
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-
-                        mLastLocation = location;
-
-                        // In some rare cases the location returned can be null
-                        if (mLastLocation == null) {
-                            return;
-                        }
-
-                        if (!Geocoder.isPresent()) {
-                            Toast.makeText(getApplicationContext(), R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
-                            return;
-                        }
-
-                        // Start service and update UI to reflect new location
-                        startIntentService();
-                        updateUI();
-
-                    }
-                });
-    }
-
-    public void updateLocation (View view){
-        Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (vibe != null) {
-            vibe.vibrate(500);
-        }
-        getLastKnownLocation();
-    }
-
-
-    private void updateUI(){
-
-        String url = "https://09ddab72-92bc-4c73-8eeb-994f8c7b9e64:LoR8rebnJL@twcservice.eu-gb.mybluemix.net/api/weather/v1/geocode/" + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude() + "/forecast/hourly/48hour.json";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-                Log.d("App", "Response: " + response);
-
-
-                try{
-
-                    JSONObject weatherObject = new JSONObject(response);
-
-                    JSONArray metadata = weatherObject.getJSONArray("forecasts");
-
-                    JSONObject fd = metadata.getJSONObject(0);
-
-
-
-                    int temp = fd.getInt("temp");
-
-                    int thisTime = temp -32;
-
-                    double nearly = Math.round (thisTime / 1.8);
-
-
-
-                    String currentWeather =   nearly  + "°C";
-
-                    String weatherPhreasetext =fd.getString("phrase_22char");
-
-                    String imageloc= "icon" + fd.getString("icon_code");
-
-
-
-                    ImageView imageView = (ImageView) findViewById(R.id.imageView);
-
-                    int id  = getBaseContext().getResources().getIdentifier(imageloc, "drawable", getBaseContext().getPackageName());
-
-                    imageView.setImageResource(id);
-
-
-
-                    TextView weatherPhrase = (TextView) findViewById(R.id.weather);
-                    weatherPhrase.setText(currentWeather);
-
-                    TextView temperatureText = (TextView) findViewById(R.id.tempText);
-                    temperatureText.setText(weatherPhreasetext);
-
-                } catch (JSONException e){
-                    Log.d("App", e.toString());
-                }
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("App", "Error: " + error.getMessage());
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> params = new HashMap<String, String>();
-                params.put("Content-Type", "application/json");
-                String creds = String.format("%s:%s","09ddab72-92bc-4c73-8eeb-994f8c7b9e64","LoR8rebnJL");
-                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
-                params.put("Authorization", auth);
-                return params;
-
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(stringRequest);
-    }
-
-    protected void startIntentService() {
-        Intent intent = new Intent(this, FetchAddressIntentService.class);
-        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-        startService(intent);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d("App", "onConnectionSuspended");
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.d("App", "onConnected");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d("App", "onConnectionFailed");
-    }
-
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            //displayAddressOutput();
-            TextView direccion = (TextView) findViewById(R.id.direccion);
-            direccion.setText(mAddressOutput);
-            Log.d("App", mAddressOutput);
-
-            // Show a toast message if an address was found.
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                Log.d("App", getString(R.string.address_found)) ;
-            }
-
-        }
-    }
-
-    public void speak(final String outMessage){
-
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-
-                try {
-                    streamPlayer = new StreamPlayer();
-                    streamPlayer.playStream(textToSpeech.synthesize(outMessage, Voice.EN_ALLISON).execute());
-                    Thread.sleep(100);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-    }
-
-
+    /**
+     * Sending a message to Watson Conversation Service
+     */
     public void sendMessage()  {
 
         final String inputmessage = this.inputMessage.getText().toString().trim();
@@ -567,7 +514,6 @@ public class MainScreenTime extends AppCompatActivity implements
             inputMessage.setMessage(inputmessage);
             inputMessage.setId("1");
             messageArrayList.add(inputMessage);
-            Log.i("Sending message", "Sending a message to Watson Conversation Service");
         }
 
         else {
@@ -591,11 +537,8 @@ public class MainScreenTime extends AppCompatActivity implements
                     MessageRequest newMessage = new MessageRequest.Builder().inputText(inputmessage).context(context).build();
                     MessageResponse response = service.message(workspace_id, newMessage).execute();
 
-                    String name = getIntent().getStringExtra("name");
-
                     //Passing Context of last conversation
-                    if(response.getContext() !=null)
-                    {
+                    if(response.getContext() !=null) {
                         context.clear();
                         context = response.getContext();
                         Log.i("context", "  "  + context + " ");
@@ -655,16 +598,13 @@ public class MainScreenTime extends AppCompatActivity implements
 
 
 
-
     //Record a message via Watson Speech to Text
     private void recordMessage() throws InterruptedException {
         speechService = new SpeechToText();
         speechService.setUsernameAndPassword(STT_username, STT_password);
 
-        microphoneHelper = new MicrophoneHelper(this);
 
-
-        if(listening) {
+        if(!listening) {
             capture = microphoneHelper.getInputStream(true);
             new Thread(new Runnable() {
                 @Override public void run() {
@@ -676,18 +616,46 @@ public class MainScreenTime extends AppCompatActivity implements
                 }
             }).start();
 
-            Toast.makeText(getApplicationContext(),"Listening....Click to Stop", Toast.LENGTH_SHORT).show();
+            listening = true;
+            Toast.makeText(this,"Listening....Click to Stop", Toast.LENGTH_SHORT).show();
 
         } else {
             try {
                 microphoneHelper.closeInputStream();
-                Toast.makeText(getApplicationContext(),"Stopped Listening....Click to Start", Toast.LENGTH_SHORT).show();
+                listening = false;
+                Toast.makeText(this,"Stopped Listening....Click to Start", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
     }
+
+    /**
+     * Check Internet Connection
+     * @return this
+     */
+    private boolean checkInternetConnection() {
+        // get Connectivity Manager object to check connection
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        assert cm != null;
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        // Check for network connections
+        if (isConnected){
+            return true;
+        }
+        else {
+            Toast.makeText(this, " No Internet Connection available ", Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+
+
 
     //Private Methods - Speech to Text
     private RecognizeOptions getRecognizeOptions() {
@@ -750,27 +718,18 @@ public class MainScreenTime extends AppCompatActivity implements
     }
 
     private void showMicText(final String text) {
-//        runOnUiThread(new Runnable() {
-//            @Override public void run() {
-//                //inputMessage.setText(text);
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+        runOnUiThread(new Runnable() {
+            @Override public void run() {
+                inputMessage.setText(text);
+            }
+        });
     }
+
 
     private void enableMicButton() {
         runOnUiThread(new Runnable() {
             @Override public void run() {
                 recordingButton.setEnabled(true);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         });
     }
@@ -780,13 +739,180 @@ public class MainScreenTime extends AppCompatActivity implements
             @Override public void run() {
                 Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
             }
         });
+    }
+
+
+
+
+    /**
+     * Getting the last known location on the device
+     * that has been registered
+     */
+    public void getLastKnownLocation() {
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+
+                        mLastLocation = location;
+
+                        // In some rare cases the location returned can be null
+                        if (mLastLocation == null) {
+                            return;
+                        }
+
+                        if (!Geocoder.isPresent()) {
+                            Toast.makeText(getApplicationContext(), R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        // Start service and update UI to reflect new location
+                        startIntentService();
+                        updateUI();
+
+                    }
+                });
+    }
+
+    /**
+     * This method is for updating the UI with the latest weather news
+     * This accesses the API call and inputs all the information giving
+     * the user a live feed of the weather forecast
+     */
+    private void updateUI(){
+
+        String url = "https://09ddab72-92bc-4c73-8eeb-994f8c7b9e64:LoR8rebnJL@twcservice.eu-gb.mybluemix.net/api/weather/v1/geocode/" + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude() + "/forecast/hourly/48hour.json";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+                // Extracting weather information from the JSON file
+                try{
+
+                    JSONObject weatherObject = new JSONObject(response);
+
+                    JSONArray metadata = weatherObject.getJSONArray("forecasts");
+
+                    JSONObject fd = metadata.getJSONObject(0);
+
+
+                    // Converting the temperature to Celsius
+                    int temp = fd.getInt("temp");
+
+                    int thisTime = temp -32;
+
+                    double nearly = Math.round (thisTime / 1.8);
+
+
+                    // Getting the current weather phrases
+                    String currentWeather =   nearly  + "°C";
+
+                    String weatherPhreasetext =fd.getString("phrase_22char");
+
+                    String imageloc= "icon" + fd.getString("icon_code");
+
+
+                    // Getting the right image according to the weather
+                    ImageView imageView = (ImageView) findViewById(R.id.imageView);
+
+                    int id  = getBaseContext().getResources().getIdentifier(imageloc, "drawable", getBaseContext().getPackageName());
+
+                    imageView.setImageResource(id);
+
+
+                    // Setting the current weather phrase
+                    TextView weatherPhrase = (TextView) findViewById(R.id.weather);
+                    weatherPhrase.setText(currentWeather);
+
+                    // Setting the current temperature
+                    TextView temperatureText = (TextView) findViewById(R.id.tempText);
+                    temperatureText.setText(weatherPhreasetext);
+
+                } catch (JSONException e){
+                    Log.d("App", e.toString());
+                }
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("App", "Error: " + error.getMessage());
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json");
+                String creds = String.format("%s:%s","09ddab72-92bc-4c73-8eeb-994f8c7b9e64","LoR8rebnJL");
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+
+            }
+        };
+
+        // Adding the request to the request queue for it to be extracted and returned
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(stringRequest);
+    }
+
+    // Fetching the current address using the sensitive intent service
+    protected void startIntentService() {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+        startService(intent);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("App", "onConnectionSuspended");
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d("App", "onConnected");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("App", "onConnectionFailed");
+    }
+
+
+    // Inner class for the current address recovery
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            //displayAddressOutput();
+            TextView direccion = (TextView) findViewById(R.id.direccion);
+            direccion.setText(mAddressOutput);
+            Log.d("App", mAddressOutput);
+
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                Log.d("App", getString(R.string.address_found)) ;
+            }
+
+        }
     }
 
 
