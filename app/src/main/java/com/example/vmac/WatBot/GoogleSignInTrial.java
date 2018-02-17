@@ -3,6 +3,7 @@ package com.example.vmac.WatBot;
 
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,19 +14,23 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GoogleSignInTrial extends AppCompatActivity implements ComponentCallbacks2 {
 
     LoginButton loginButton;
     CallbackManager callbackManager;
+    UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +45,13 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
         }
 
 
+        userModel = new UserModel();
+
         // Facebook sign in options
         callbackManager = CallbackManager.Factory.create();
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList("user_status, user_posts"));
+        loginButton.setReadPermissions(Arrays.asList("user_status, user_posts, user_likes"));
 
 
         // Callback registration
@@ -60,7 +67,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                     public void onSuccess(LoginResult loginResult) {
 
                         // Retrieving access token for login result
-                        GraphRequest request = GraphRequest.newMeRequest(
+                        final GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(),
 
 
@@ -75,7 +82,42 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
 
                                         // Try and set the username
                                         try {
-                                            UserInfo.setUsername(response.getJSONObject().get("name").toString());
+                                            JSONObject getPosts = response.getJSONObject();
+                                            JSONObject theReal = getPosts.getJSONObject("posts");
+                                            JSONArray theReal2 = theReal.getJSONArray("data");
+
+                                            int count = theReal2.length();
+
+                                            for(int i = 0; i < count; i++){
+                                                JSONObject posts = theReal2.getJSONObject(i);
+                                                if(posts.has("message")){
+                                                    userModel.addMessages(new UserMessages((String)posts.get("message")));
+                                                }
+                                            }
+
+                                            String c= userModel.getMessageList().toString();
+                                            Pattern pt = Pattern.compile("[^a-zA-Z0-9 .,!]");
+                                            Matcher match= pt.matcher(c);
+                                            while(match.find())
+                                            {
+                                                String s= match.group();
+                                                c=c.replace(match.group(), "");
+                                            }
+
+                                            userModel.getMessageList().clear();
+
+                                            Log.i("New Message", c);
+//                                            UserInfo.setUsername(response.getJSONObject().get("name").toString());
+                                            // Create object of SharedPreferences.
+                                            SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
+                                            //now get Editor
+                                            SharedPreferences.Editor editor= sharedPref.edit();
+                                            //put your value
+                                            editor.putString("username", response.getJSONObject().get("name").toString());
+                                            editor.putString("userPrefs", c);
+                                            //commits your edits
+                                            editor.apply();
+
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -85,6 +127,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                         startActivity(intent);
+
                                     }
                                 });
 
@@ -92,27 +135,9 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                         // When user logs in this is retrieved and analysed
                         // Stored in a flash memory
                         Bundle parameters = new Bundle();
-                        parameters.putString("fields", "id,name,link");
+                        parameters.putString("fields", "id,name,link,posts");
                         request.setParameters(parameters);
                         request.executeAsync();
-
-                        new GraphRequest(
-                                AccessToken.getCurrentAccessToken(),
-                                "/me/feed",
-                                parameters,
-                                HttpMethod.GET,
-                                new GraphRequest.Callback() {
-                                    public void onCompleted(GraphResponse response) {
-                                        JSONObject fd = response.getJSONObject();
-                                        try {
-                                            Object info = fd.get("data");
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                        ).executeAsync();
-
                     }
 
                     @Override
@@ -125,6 +150,8 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                         Log.i("Error!!", exception.toString());
                     }
                 });
+        onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_MODERATE);
+
     }
 
     // Method for checking if the user has logged in

@@ -1,10 +1,7 @@
 package com.example.vmac.WatBot;
 
-/**
- * Created by VMac on 17/11/16.
- */
-
 import java.io.Serializable;
+
 
 public class Message implements Serializable {
     String id, message;

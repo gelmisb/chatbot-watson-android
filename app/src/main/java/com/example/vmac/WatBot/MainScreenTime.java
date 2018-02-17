@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Geocoder;
@@ -122,8 +123,14 @@ public class MainScreenTime extends AppCompatActivity implements
     private MicrophoneHelper microphoneHelper;
     private ComponentName cn;
 
+    private String name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
+        name = sharedPref.getString("username", "");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen_time);
         mContext = getApplicationContext();
@@ -196,8 +203,6 @@ public class MainScreenTime extends AppCompatActivity implements
                 Log.i("Logger", "Failure");
             }
         });
-
-
 
         // User input params initialisation
         inputMessage = (EditText) findViewById(R.id.message);
@@ -330,8 +335,12 @@ public class MainScreenTime extends AppCompatActivity implements
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), News.class);
+//                Intent intent = new Intent(getApplicationContext(), News.class);
+//                startActivity(intent);
+
+                Intent intent = new Intent(getApplicationContext(), NaturalLanguageProcessing.class);
                 startActivity(intent);
+
             }
         });
 
@@ -411,6 +420,8 @@ public class MainScreenTime extends AppCompatActivity implements
                 return false;
             }
         });
+
+        onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
 
 
     }
@@ -563,7 +574,7 @@ public class MainScreenTime extends AppCompatActivity implements
 
                                 if(outMessage.getMessage().equals("Hello . How can I help you?"))
                                 {
-                                    outMessage.setMessage("Hello " + UserInfo.getUsername() + ", how could I assist you?");
+                                    outMessage.setMessage("Hello " + name + ", how could I assist you?");
                                 }
 
                                 Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
