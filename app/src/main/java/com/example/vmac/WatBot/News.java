@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class News extends AppCompatActivity {
 
@@ -80,6 +82,7 @@ public class News extends AppCompatActivity {
 
             }
         });
+
     }
 
     private class Test extends AsyncTask<String,String,String>{
@@ -103,10 +106,9 @@ public class News extends AppCompatActivity {
                     response.getEntity().getContent().close();
                     throw new IOException(statusLine.getReasonPhrase());
                 }
-            } catch (ClientProtocolException e) {
-                //TODO Handle problems..
-            } catch (IOException e) {
-                //TODO Handle problems..
+            } catch (IOException ese) {
+                ese.printStackTrace();
+
             }
             return responseString;
 
@@ -124,6 +126,7 @@ public class News extends AppCompatActivity {
                 for(int i = 0; i < count; i++){
 
                     JSONObject article = metadata.getJSONObject(i);
+
                     model.addArticle(new Article(article.getString("title"),article.getString("description"),article.getString("author"),article.getString("url"),article.getString("urlToImage"),article.getString("publishedAt")));
 
                 }
@@ -133,10 +136,16 @@ public class News extends AppCompatActivity {
             } catch (JSONException e){
                 Log.d("App", e.toString());
             }
+
+//            Thread thread = new Thread(new Runnable() {
+//                public void run() {
+//                    String count = model.getNewsList().toString();
+//
+//                    Log.i("Checking the news", count);
+////                        com.example.vmac.WatBot.NaturalLanguageProcessing.Companion.passTheKey(model.getArticleAt(i).getContent());
+//                }
+//            });
+//            thread.start();
         }
-
-
     }
-
-
 }

@@ -83,7 +83,7 @@
         <activity android:name=".SingleNewsActivity" />
         <activity android:name=".BaseActivity" />
         <activity android:name=".SemanticProcessing" />
-        <activity android:name=".NaturalLanguageProcessing"></activity>
+        <activity android:name=".NaturalLanguageProcessing"/>
     </application>
 
 </manifest>

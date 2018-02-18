@@ -1,9 +1,18 @@
 package com.example.vmac.WatBot;
 
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.ComponentCallbacks2;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,19 +32,27 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GoogleSignInTrial extends AppCompatActivity implements ComponentCallbacks2 {
 
+
+    String c, userprefs;
     LoginButton loginButton;
     CallbackManager callbackManager;
     UserModel userModel;
+    private final static int INTERVAL = 1000 * 60 ; //2 minutes
+    Handler mHandler = new Handler();
+    SharedPreferences sharedPref;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in_trial);
+
+
 
         if(isLoggedIn()){
             Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
@@ -44,6 +61,11 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
             startActivity(intent);
         }
 
+
+
+
+
+        sharedPref= getSharedPreferences("mypref", 0);
 
         userModel = new UserModel();
 
@@ -64,7 +86,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                        @param loginResult
                      */
                     @Override
-                    public void onSuccess(LoginResult loginResult) {
+                    public void onSuccess(final LoginResult loginResult) {
 
                         // Retrieving access token for login result
                         final GraphRequest request = GraphRequest.newMeRequest(
@@ -80,7 +102,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                             JSONObject object,
                                             GraphResponse response) {
 
-                                        // Try and set the username
+                                        // Set the username
                                         try {
                                             JSONObject getPosts = response.getJSONObject();
                                             JSONObject theReal = getPosts.getJSONObject("posts");
@@ -95,21 +117,19 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                                 }
                                             }
 
-                                            String c= userModel.getMessageList().toString();
+                                            c = userModel.getMessageList().toString();
+
                                             Pattern pt = Pattern.compile("[^a-zA-Z0-9 .,!]");
                                             Matcher match= pt.matcher(c);
                                             while(match.find())
                                             {
-                                                String s= match.group();
-                                                c=c.replace(match.group(), "");
+                                                c = c.replace(match.group(), "");
                                             }
 
                                             userModel.getMessageList().clear();
 
-                                            Log.i("New Message", c);
 //                                            UserInfo.setUsername(response.getJSONObject().get("name").toString());
                                             // Create object of SharedPreferences.
-                                            SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
                                             //now get Editor
                                             SharedPreferences.Editor editor= sharedPref.edit();
                                             //put your value
@@ -122,6 +142,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                             e.printStackTrace();
                                         }
 
+
                                         // When all the actions are completed transfer the user to the Main Menu
                                         Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -129,7 +150,27 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                         startActivity(intent);
 
                                     }
+
+
                                 });
+
+                            final Handler handler = new Handler();
+
+                            handler.postDelayed(new Runnable() {
+
+                                public void run() {
+
+                                    // When all the actions are completed transfer the user to the Main Menu
+                                    Intent intent = new Intent(getApplicationContext(), BaseActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                    startActivity(intent);
+
+                                    handler.postDelayed(this, 10000); //now is every 2 minutes
+//                                    handler.postDelayed(this, 600000); //now is every 2 minutes
+                                }
+
+                        }, 10000);
 
                         // This is for getting user's feed
                         // When user logs in this is retrieved and analysed
@@ -153,6 +194,9 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
         onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_MODERATE);
 
     }
+
+
+
 
     // Method for checking if the user has logged in
     public boolean isLoggedIn() {

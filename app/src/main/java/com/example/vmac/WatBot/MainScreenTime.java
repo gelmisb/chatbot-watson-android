@@ -79,7 +79,7 @@ import java.util.Map;
 public class MainScreenTime extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ComponentCallbacks2 {
 
-    public Button weatherButton, botSpeak, news;
+    public Button weatherButton, botSpeak, news, semantic;
     private ImageButton recordingButton;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -323,6 +323,9 @@ public class MainScreenTime extends AppCompatActivity implements
         // Checking the latest news
         news = (Button) findViewById(R.id.newsBtn);
 
+        // Semantic analysis
+        semantic = (Button) findViewById(R.id.semanticBtn);
+
         // Recording button with a touch listener
         recordingButton = (ImageButton) findViewById(R.id.record_button);
 
@@ -335,11 +338,9 @@ public class MainScreenTime extends AppCompatActivity implements
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(getApplicationContext(), News.class);
-//                startActivity(intent);
-
-                Intent intent = new Intent(getApplicationContext(), NaturalLanguageProcessing.class);
+                Intent intent = new Intent(getApplicationContext(), News.class);
                 startActivity(intent);
+
 
             }
         });
@@ -349,6 +350,15 @@ public class MainScreenTime extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Watson conversation view button listener action
+        semantic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), NaturalLanguageProcessing.class);
                 startActivity(intent);
             }
         });
