@@ -81,9 +81,11 @@
         <activity android:name=".WeatherApp" />
         <activity android:name=".News" />
         <activity android:name=".SingleNewsActivity" />
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".BaseActivity"
+            android:theme="@android:style/Theme.NoDisplay"/>
         <activity android:name=".SemanticProcessing" />
-        <activity android:name=".NaturalLanguageProcessing"/>
+        <activity android:name=".NaturalLanguageProcessing"
+            android:theme="@android:style/Theme.NoDisplay"/>
     </application>
 
 </manifest>

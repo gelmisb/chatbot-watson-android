@@ -8,6 +8,7 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -48,11 +49,15 @@ public class News extends AppCompatActivity {
 
     NewsModel model;
     ListView newsList;
+    private static CustomListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         model = new NewsModel();
 
@@ -64,9 +69,10 @@ public class News extends AppCompatActivity {
 
         newsList = (ListView) findViewById(R.id.newsTitleList);
 
-        ArrayAdapter<Article> articleArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, model.getNewsList());
+//        ArrayAdapter<Article> articleArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, model.getNewsList());
+        adapter= new CustomListAdapter(model.getNewsList(),getApplicationContext());
 
-        newsList.setAdapter(articleArrayAdapter);
+        newsList.setAdapter(adapter);
 
         newsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

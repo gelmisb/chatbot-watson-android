@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
@@ -80,16 +81,12 @@ public class MainScreenTime extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ComponentCallbacks2 {
 
     public Button weatherButton, botSpeak, news, semantic;
-    private ImageButton recordingButton;
+    private ImageButton recordingButton, pressendRecordingButton;
 
     private FusedLocationProviderClient mFusedLocationClient;
     protected Location mLastLocation;
     private AddressResultReceiver mResultReceiver = new AddressResultReceiver(new Handler());
     private String mAddressOutput;
-
-
-    // TESTING THROUGH WILL CAUSE A MEM-LEEK
-    // Continue from here
 
     private RecyclerView recyclerView;
     private ChatAdapter mAdapter;
@@ -209,6 +206,7 @@ public class MainScreenTime extends AppCompatActivity implements
         btnSend = (ImageButton) findViewById(R.id.btn_send);
         btnRecord= (ImageButton) findViewById(R.id.btn_record);
 
+
         // Custom font for the application
         String customFont = "Montserrat-Regular.ttf";
         Typeface typeface = Typeface.createFromAsset(getAssets(), customFont);
@@ -238,7 +236,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
         // Sending the initial welcoming message
         sendMessage();
-
 
 
         //Watson Text-to-Speech Service on Bluemix
@@ -287,30 +284,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
             }
         }));
-//
-//        // Touch listener for the UI buttons for the communication with the user
-//        btnSend.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                if(checkInternetConnection()) {
-//                    sendMessage();
-//                }
-//            }
-//        });
-//
-//
-//        btnRecord.setOnClickListener(new View.OnClickListener() {
-//            @Override public void onClick(View v) {
-//                try {
-//                    recordMessage();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-
-
-
 
         // UI initialisation for all the components on the screen
 
@@ -397,25 +370,38 @@ public class MainScreenTime extends AppCompatActivity implements
         }
 
 
-
         recordingButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+
+                    recordingButton.setImageResource(R.drawable.microbuttonpressend);
+
                     try {
+                        Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                        if (vibe != null) {
+                            vibe.vibrate(100);
+                        }
+
                         recordMessage();
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
                     Log.i("Key", "Key event down " + motionEvent);
                 }
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+
+                    recordingButton.setImageResource(R.drawable.microbutton);
+
                     try {
                         recordMessage();
                         sendMessage();
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -457,8 +443,6 @@ public class MainScreenTime extends AppCompatActivity implements
             }
         });
         thread.start();
-
-
     }
 
 
@@ -621,6 +605,7 @@ public class MainScreenTime extends AppCompatActivity implements
 
     //Record a message via Watson Speech to Text
     private void recordMessage() throws InterruptedException {
+
         speechService = new SpeechToText();
         speechService.setUsernameAndPassword(STT_username, STT_password);
 
@@ -638,13 +623,13 @@ public class MainScreenTime extends AppCompatActivity implements
             }).start();
 
             listening = true;
-            Toast.makeText(this,"Listening....Click to Stop", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Listening", Toast.LENGTH_SHORT).show();
 
         } else {
             try {
                 microphoneHelper.closeInputStream();
                 listening = false;
-                Toast.makeText(this,"Stopped Listening....Click to Start", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Stopped Listening", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -656,6 +641,7 @@ public class MainScreenTime extends AppCompatActivity implements
      * @return this
      */
     private boolean checkInternetConnection() {
+
         // get Connectivity Manager object to check connection
         ConnectivityManager cm =
                 (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
