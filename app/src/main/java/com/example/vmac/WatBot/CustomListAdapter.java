@@ -44,7 +44,7 @@ public class CustomListAdapter extends ArrayAdapter<Article> implements View.OnC
         {
             case R.id.item_info:
                 assert model != null;
-                Snackbar.make(v, "Release date " +model.getContent(), Snackbar.LENGTH_LONG)
+                Snackbar.make(v, " " +model.getContent(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
                 break;
         }
