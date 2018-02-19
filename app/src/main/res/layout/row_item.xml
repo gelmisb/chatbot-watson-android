@@ -8,6 +8,7 @@
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
     android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
     android:background="@color/cast_expanded_controller_seek_bar_progress_background_tint_color"
     android:orientation="vertical"
     android:padding="10dp">
