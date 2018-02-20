@@ -417,7 +417,7 @@ public class MainScreenTime extends AppCompatActivity implements
             }
         });
 
-        onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
+        onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
 
 
     }

@@ -1,5 +1,6 @@
 package com.example.vmac.WatBot;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
@@ -13,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,7 +51,7 @@ public class SingleNewsActivity extends AppCompatActivity {
         TextView aDescription = (TextView)findViewById(R.id.description);
         TextView aAuthor = (TextView)findViewById(R.id.author);
         TextView aDate = (TextView)findViewById(R.id.date);
-        ImageView aLink = (ImageView)findViewById(R.id.read);
+        Button aLink = (Button)findViewById(R.id.read);
 
         aTitle.setText(article.getTitle());
         aDescription.setText(article.getContent());
@@ -68,10 +71,12 @@ public class SingleNewsActivity extends AppCompatActivity {
 
         String imageUrl = article.getImageURL();
         new GetImage().execute(imageUrl,null,null);
-    onTrimMemory(TRIM_MEMORY_COMPLETE);
+
+        onTrimMemory(TRIM_MEMORY_RUNNING_MODERATE);
     }
 
 
+    @SuppressLint("StaticFieldLeak")
     private class GetImage extends AsyncTask<String, String, String> {
 
         URL url;
@@ -99,11 +104,12 @@ public class SingleNewsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String image){
+            Animation myFadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
             iv = (ImageView) findViewById(R.id.image);
             iv.setImageDrawable(d);
+            iv.startAnimation(myFadeInAnimation); //Set animation to your ImageView
+
         }
-
-
     }
 
 
