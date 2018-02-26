@@ -726,6 +726,7 @@ public class MainScreenTime extends AppCompatActivity implements
      */
     public class MyTimerTask extends TimerTask {
 
+        
         @Override
         public void run() {
             //Since we want to change something which is on hte UI
