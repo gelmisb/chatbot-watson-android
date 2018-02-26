@@ -3,6 +3,7 @@ package com.example.vmac.WatBot;
 import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
@@ -78,7 +79,8 @@ public class News extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                mp.start();
                 if (vibe != null) {
                     vibe.vibrate(150);
                 }

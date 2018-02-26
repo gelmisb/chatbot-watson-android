@@ -12,8 +12,12 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
@@ -125,9 +129,10 @@ public class MainScreenTime extends AppCompatActivity implements
     private SpeakerLabelsDiarization.RecoTokens recoTokens;
     private MicrophoneHelper microphoneHelper;
     private ComponentName cn;
-
+    private int helloCount = 0;
     private int countColours = 0;
     private Timer timer;
+    private MediaPlayer mp;
 
     ConstraintLayout mealLayout;
     private String name;
@@ -326,6 +331,8 @@ public class MainScreenTime extends AppCompatActivity implements
         news.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                mp.start();
                 Intent intent = new Intent(getApplicationContext(), News.class);
                 startActivity(intent);
             }
@@ -335,6 +342,8 @@ public class MainScreenTime extends AppCompatActivity implements
         botSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                mp.start();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
@@ -344,6 +353,8 @@ public class MainScreenTime extends AppCompatActivity implements
         semantic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                mp.start();
                 Intent intent = new Intent(getApplicationContext(), NaturalLanguageProcessing.class);
                 startActivity(intent);
             }
@@ -353,6 +364,8 @@ public class MainScreenTime extends AppCompatActivity implements
         weatherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                mp.start();
                 Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
                 startActivity(intent);
             }
@@ -390,7 +403,8 @@ public class MainScreenTime extends AppCompatActivity implements
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
 
                     recordingButton.setImageResource(R.drawable.microphone);
-
+                    mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                    mp.start();
 
                     try {
                         Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -509,6 +523,10 @@ public class MainScreenTime extends AppCompatActivity implements
 
         final String inputmessage = this.inputMessage.getText().toString().trim();
 
+
+
+
+        // Done
         if(inputMessage.getText().toString().contains("calendar")){
             Intent intent = new Intent();
 
@@ -519,29 +537,38 @@ public class MainScreenTime extends AppCompatActivity implements
             startActivity(intent);
         }
 
-
-
         if(inputMessage.getText().toString().contains("celebration")){
             timer=new Timer();
             MyTimerTask myTimerTask =new MyTimerTask();
             //schedule to change background color every second
+            mp = MediaPlayer.create(getApplicationContext(), R.raw.celeb);
+            mp.start();
             timer.schedule(myTimerTask,500,500);
         }
 
+        // Done
         if(inputMessage.getText().toString().contains("call")){
             Intent intent = new Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI);
             startActivity(intent);
         }
 
+        // Done
         if(inputMessage.getText().toString().contains("weather")){
             Intent intent = new Intent(this, WeatherApp.class);
             startActivity(intent);
         }
 
+        // Done
         if(inputMessage.getText().toString().contains("music")){
             Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MUSIC);
             startActivity(intent);
         }
+
+        if(inputMessage.getText().toString().contains("news")){
+            Intent intent = new Intent(this, News.class);
+            startActivity(intent);
+        }
+
 
         if(!this.initialRequest) {
             Message inputMessage = new Message();
@@ -597,7 +624,11 @@ public class MainScreenTime extends AppCompatActivity implements
 
                                 if(outMessage.getMessage().equals("Hello . How can I help you?"))
                                 {
-                                    outMessage.setMessage("Hello " + name + ", how can I help?");
+                                    if(helloCount == 0 ){
+                                        outMessage.setMessage("Hello " + name + ", how can I help?");
+                                    } else {
+                                        outMessage.setMessage("Welcome back " + name);
+                                    }
                                 }
 
                                 Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
@@ -690,6 +721,9 @@ public class MainScreenTime extends AppCompatActivity implements
     }
 
 
+    /**
+     * THIS IS AN EASTER EGG, DONE ONLY FOR CRINGY PURPOSES
+     */
     public class MyTimerTask extends TimerTask {
 
         @Override
@@ -702,12 +736,21 @@ public class MainScreenTime extends AppCompatActivity implements
                     countColours++;
                     Log.i("Entered", "Celebration mode " +countColours);
 
+                    Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                    if (vibe != null) {
+                        vibe.vibrate(150);
+                    }
+
+
+
                     Random random = new Random();//this is random generator
                     mealLayout.setBackgroundColor(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
 
-                    if(countColours == 50){
+                    if(countColours == 30){
                         timer.cancel();
                         mealLayout.setBackgroundResource(R.drawable.blurryimage);
+                        mp.stop();
                         countColours = 0;
                     }
                 }

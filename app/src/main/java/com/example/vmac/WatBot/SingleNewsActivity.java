@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -61,7 +62,8 @@ public class SingleNewsActivity extends AppCompatActivity {
         aLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                mp.start();
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(article.getURL()));
                 startActivity(browserIntent);
 

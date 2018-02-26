@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
@@ -59,6 +60,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
             Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
             startActivity(intent);
         }
 
@@ -119,7 +121,8 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                             }
 
                                             c = userModel.getMessageList().toString();
-
+                                            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                                            mp.start();
                                             Pattern pt = Pattern.compile("[^a-zA-Z0-9 .,!]");
                                             Matcher match= pt.matcher(c);
                                             while(match.find())
