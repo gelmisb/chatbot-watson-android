@@ -23,6 +23,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -133,7 +134,8 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
                                             //now get Editor
                                             SharedPreferences.Editor editor= sharedPref.edit();
                                             //put your value
-                                            editor.putString("username", response.getJSONObject().get("name").toString());
+                                            editor.putString("username", Profile.getCurrentProfile().getFirstName());
+
                                             editor.putString("userPrefs", c);
                                             //commits your edits
                                             editor.apply();

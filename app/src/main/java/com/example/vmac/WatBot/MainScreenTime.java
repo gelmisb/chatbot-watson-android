@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
@@ -19,6 +20,7 @@ import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +36,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +79,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainScreenTime extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ComponentCallbacks2 {
@@ -120,6 +126,10 @@ public class MainScreenTime extends AppCompatActivity implements
     private MicrophoneHelper microphoneHelper;
     private ComponentName cn;
 
+    private int countColours = 0;
+    private Timer timer;
+
+    ConstraintLayout mealLayout;
     private String name;
 
     @Override
@@ -127,10 +137,15 @@ public class MainScreenTime extends AppCompatActivity implements
 
         SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
         name = sharedPref.getString("username", "");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen_time);
         mContext = getApplicationContext();
+
+
+        mealLayout = (ConstraintLayout) findViewById(R.id.mainLayout);
+
+
+
 
         // A logout button for the user to log out whenever they need to
         // When user logs out it will bring them to the sign in screen to be authenticated again
@@ -313,8 +328,6 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), News.class);
                 startActivity(intent);
-
-
             }
         });
 
@@ -376,10 +389,12 @@ public class MainScreenTime extends AppCompatActivity implements
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
 
-                    recordingButton.setImageResource(R.drawable.microbuttonpressend);
+                    recordingButton.setImageResource(R.drawable.microphone);
+
 
                     try {
                         Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        recordingButton.setImageResource(R.drawable.microphone1);
 
                         if (vibe != null) {
                             vibe.vibrate(100);
@@ -395,8 +410,8 @@ public class MainScreenTime extends AppCompatActivity implements
                 }
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                    recordingButton.setImageResource(R.drawable.microphone);
 
-                    recordingButton.setImageResource(R.drawable.microbutton);
 
                     try {
                         recordMessage();
@@ -494,7 +509,7 @@ public class MainScreenTime extends AppCompatActivity implements
 
         final String inputmessage = this.inputMessage.getText().toString().trim();
 
-        if(inputMessage.getText().toString().equals("calendar") || inputMessage.getText().toString().equals("Calendar")){
+        if(inputMessage.getText().toString().contains("calendar")){
             Intent intent = new Intent();
 
             //Froyo or greater (mind you I just tested this on CM7 and the less than froyo one worked so it depends on the phone...)
@@ -504,12 +519,26 @@ public class MainScreenTime extends AppCompatActivity implements
             startActivity(intent);
         }
 
-        if(inputMessage.getText().toString().equals("call") || inputMessage.getText().toString().equals("Call") || inputMessage.getText().toString().equals("call ") || inputMessage.getText().toString().equals("Call ")){
+
+
+        if(inputMessage.getText().toString().contains("celebration")){
+            timer=new Timer();
+            MyTimerTask myTimerTask =new MyTimerTask();
+            //schedule to change background color every second
+            timer.schedule(myTimerTask,500,500);
+        }
+
+        if(inputMessage.getText().toString().contains("call")){
             Intent intent = new Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI);
             startActivity(intent);
         }
 
-        if(inputMessage.getText().toString().equals("music") || inputMessage.getText().toString().equals("Music") || inputMessage.getText().toString().equals("music ") || inputMessage.getText().toString().equals("Music ")){
+        if(inputMessage.getText().toString().contains("weather")){
+            Intent intent = new Intent(this, WeatherApp.class);
+            startActivity(intent);
+        }
+
+        if(inputMessage.getText().toString().contains("music")){
             Intent intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MUSIC);
             startActivity(intent);
         }
@@ -568,7 +597,7 @@ public class MainScreenTime extends AppCompatActivity implements
 
                                 if(outMessage.getMessage().equals("Hello . How can I help you?"))
                                 {
-                                    outMessage.setMessage("Hello " + name + ", how could I assist you?");
+                                    outMessage.setMessage("Hello " + name + ", how can I help?");
                                 }
 
                                 Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));
@@ -599,7 +628,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
         thread.start();
     }
-
 
 
 
@@ -662,8 +690,30 @@ public class MainScreenTime extends AppCompatActivity implements
     }
 
 
+    public class MyTimerTask extends TimerTask {
 
+        @Override
+        public void run() {
+            //Since we want to change something which is on hte UI
+            //so we have to run on UI thread..
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    countColours++;
+                    Log.i("Entered", "Celebration mode " +countColours);
 
+                    Random random = new Random();//this is random generator
+                    mealLayout.setBackgroundColor(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+
+                    if(countColours == 50){
+                        timer.cancel();
+                        mealLayout.setBackgroundResource(R.drawable.blurryimage);
+                        countColours = 0;
+                    }
+                }
+            });
+        }
+    }
     //Private Methods - Speech to Text
     private RecognizeOptions getRecognizeOptions() {
         return new RecognizeOptions.Builder()
@@ -823,7 +873,7 @@ public class MainScreenTime extends AppCompatActivity implements
                     // Getting the current weather phrases
                     String currentWeather =   nearly  + "°C";
 
-                    String weatherPhreasetext =fd.getString("phrase_22char");
+//                    String weatherPhreasetext =fd.getString("phrase_22char");
 
                     String imageloc= "icon" + fd.getString("icon_code");
 
@@ -841,8 +891,8 @@ public class MainScreenTime extends AppCompatActivity implements
                     weatherPhrase.setText(currentWeather);
 
                     // Setting the current temperature
-                    TextView temperatureText = (TextView) findViewById(R.id.tempText);
-                    temperatureText.setText(weatherPhreasetext);
+                    //TextView temperatureText = (TextView) findViewById(R.id.tempText);
+                    //temperatureText.setText(weatherPhreasetext);
 
                 } catch (JSONException e){
                     Log.d("App", e.toString());
@@ -910,8 +960,8 @@ public class MainScreenTime extends AppCompatActivity implements
             // or an error message sent from the intent service.
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             //displayAddressOutput();
-            TextView direccion = (TextView) findViewById(R.id.direccion);
-            direccion.setText(mAddressOutput);
+//            TextView direccion = (TextView) findViewById(R.id.direccion);
+//            direccion.setText(mAddressOutput);
             Log.d("App", mAddressOutput);
 
             // Show a toast message if an address was found.
