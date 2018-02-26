@@ -12,7 +12,7 @@ public class NewsModel {
 
     }
 
-    public  Article getArticleAt(int index){
+    public Article getArticleAt(int index){
 
         return newsList.get(index);
     }

@@ -11,6 +11,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
     <!-- Calendar actions that require user permissions for reading and writing events into it -->
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
@@ -22,7 +26,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.USER_POSTS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -81,11 +85,15 @@
         <activity android:name=".WeatherApp" />
         <activity android:name=".News" />
         <activity android:name=".SingleNewsActivity" />
-        <activity android:name=".BaseActivity"
-            android:theme="@android:style/Theme.NoDisplay"/>
+        <activity
+            android:name=".BaseActivity"
+            android:theme="@android:style/Theme.NoDisplay" />
         <activity android:name=".SemanticProcessing" />
-        <activity android:name=".NaturalLanguageProcessing"
-            android:theme="@android:style/Theme.NoDisplay"/>
+        <activity
+            android:name=".NaturalLanguageProcessing"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity android:name=".PictureActivity" />
+        <activity android:name=".Main2Activity" />
     </application>
 
 </manifest>

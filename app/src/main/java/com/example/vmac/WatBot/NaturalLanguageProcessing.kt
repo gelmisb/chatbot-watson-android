@@ -3,6 +3,7 @@ package com.example.vmac.WatBot
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +19,10 @@ class NaturalLanguageProcessing : Activity() {
     var newsSemanticAnalysis: String = ""
     var output: String  = ""
 
+    val sharedPref: SharedPreferences = getSharedPreferences("thispref", 0)
+
+    val editor = sharedPref.edit()
+
     val analyzer = NaturalLanguageUnderstanding(
             NaturalLanguageUnderstanding.VERSION_DATE_2017_02_27,
             "8fce2076-ff98-4d5b-88c6-6978ba567a38",
@@ -26,11 +31,11 @@ class NaturalLanguageProcessing : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_natural_language_processing)
 
-        val sharedPref = getSharedPreferences("mypref", 0)
 
         userPrefs = sharedPref.getString("userPrefs", "")
+
+
 
         semanticAnalysis(userPrefs)
     }
@@ -38,6 +43,7 @@ class NaturalLanguageProcessing : Activity() {
     companion object {
 
         fun passTheKey(str: String) {
+
             NaturalLanguageProcessing().semanticAnalysis(str)
         }
 
@@ -50,9 +56,9 @@ class NaturalLanguageProcessing : Activity() {
     }
 
     fun semanticAnalysis(text: String){
-        val sharedPref = getSharedPreferences("mypref", 0)
 
-        val editor = sharedPref.edit()
+        Log.i("made", "it")
+
         AsyncTask.execute {
 
             val emotion = EmotionOptions.Builder()
@@ -100,6 +106,9 @@ class NaturalLanguageProcessing : Activity() {
 
             output = "Overall sentiment: ${overallSentiment}\n\n"
 
+//            val sharedPref = getSharedPreferences("mypref", 0)
+
+//            val editor = sharedPref.edit()
 
             if (text == userPrefs) {
                 editor.putString("userSemanticAnalysis", output)
@@ -113,8 +122,6 @@ class NaturalLanguageProcessing : Activity() {
 
             editor.apply()
 
-
-
             for (entity in response.entities) {
                 output += "${entity.text} (${entity.type}) Sentiment: ${entity.sentiment.score}\n"
             }
@@ -123,6 +130,7 @@ class NaturalLanguageProcessing : Activity() {
 
                 userSemanticAnalysis = sharedPref.getString("userSemanticAnalysis", "")
                 newsSemanticAnalysis = sharedPref.getString("newsSemanticAnalysis", "")
+
                 Log.i("Sending stuff - User", userSemanticAnalysis)
                 Log.i("Sending stuff - News", newsSemanticAnalysis)
 

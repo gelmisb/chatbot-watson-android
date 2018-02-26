@@ -310,8 +310,8 @@
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/record_button"
-        android:layout_width="74dp"
-        android:layout_height="68dp"
+        android:layout_width="65dp"
+        android:layout_height="60dp"
         android:background="@null"
         android:elevation="0dp"
         android:paddingLeft="10dp"

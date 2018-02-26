@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Geocoder;
@@ -18,6 +19,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -85,7 +87,7 @@ import java.util.TimerTask;
 public class MainScreenTime extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ComponentCallbacks2 {
 
-    public Button weatherButton, botSpeak, news, semantic;
+    public Button weatherButton, botSpeak, news, semantic, takePicture;
     private ImageButton recordingButton;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -135,6 +137,9 @@ public class MainScreenTime extends AppCompatActivity implements
     ConstraintLayout mainLayout;
 
     private String name;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -313,11 +318,24 @@ public class MainScreenTime extends AppCompatActivity implements
         // Semantic analysis
         semantic = (Button) findViewById(R.id.semanticBtn);
 
+
+//        takePicture = (Button) findViewById(R.id.takePicture);
+
         // Recording button with a touch listener
         recordingButton = (ImageButton) findViewById(R.id.record_button);
 
         inputMessage = (EditText) findViewById(R.id.message);
 
+//
+//        takePicture.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+//                mp.start();
+//                Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         // News button listener action
         news.setOnClickListener(new View.OnClickListener() {
@@ -352,6 +370,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+
 
         // Weather button listener action
         weatherButton.setOnClickListener(new View.OnClickListener() {
@@ -443,6 +462,9 @@ public class MainScreenTime extends AppCompatActivity implements
 
 
     }
+
+
+
 
     /**
      * For the AI - to - user communication

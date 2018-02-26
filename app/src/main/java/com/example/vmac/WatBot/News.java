@@ -45,6 +45,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class News extends AppCompatActivity {
 
@@ -72,6 +77,7 @@ public class News extends AppCompatActivity {
 
 //        ArrayAdapter<Article> articleArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, model.getNewsList());
         adapter= new CustomListAdapter(model.getNewsList(),getApplicationContext());
+
 
         newsList.setAdapter(adapter);
 
@@ -137,6 +143,8 @@ public class News extends AppCompatActivity {
 
                     model.addArticle(new Article(article.getString("title"),article.getString("description"),article.getString("author"),article.getString("url"),article.getString("urlToImage"),article.getString("publishedAt")));
 
+
+
                 }
 
                 PopulateView();
@@ -145,15 +153,18 @@ public class News extends AppCompatActivity {
                 Log.d("App", e.toString());
             }
 
-//            Thread thread = new Thread(new Runnable() {
-//                public void run() {
-//                    String count = model.getNewsList().toString();
+//            String count = model.getNewsList().toString();
 //
-//                    Log.i("Checking the news", count);
-////                        com.example.vmac.WatBot.NaturalLanguageProcessing.Companion.passTheKey(model.getArticleAt(i).getContent());
-//                }
-//            });
-//            thread.start();
+//            Pattern pt = Pattern.compile("[^a-zA-Z0-9 .,!]");
+//            Matcher match= pt.matcher(count);
+//            while(match.find())
+//            {
+//                count= count.replace(match.group(), "");
+//            }
+//            Log.i("Checking the news", count);
+
+//            com.example.vmac.WatBot.NaturalLanguageProcessing.Companion.passTheKey(count);
+
         }
     }
 }
