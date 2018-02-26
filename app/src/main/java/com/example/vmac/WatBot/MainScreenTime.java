@@ -9,15 +9,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
@@ -40,7 +36,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,21 +86,23 @@ public class MainScreenTime extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ComponentCallbacks2 {
 
     public Button weatherButton, botSpeak, news, semantic;
-    private ImageButton recordingButton, pressendRecordingButton;
+    private ImageButton recordingButton;
 
     private FusedLocationProviderClient mFusedLocationClient;
     protected Location mLastLocation;
     private AddressResultReceiver mResultReceiver = new AddressResultReceiver(new Handler());
-    private String mAddressOutput;
 
     private RecyclerView recyclerView;
     private ChatAdapter mAdapter;
     private ArrayList messageArrayList;
     private EditText inputMessage;
-    private ImageButton btnSend;
-    private ImageButton btnRecord;
     private Map<String,Object> context = new HashMap<>();
+
     StreamPlayer streamPlayer;
+    private MediaPlayer mp;
+
+    private Logger myLogger;
+
     private boolean initialRequest;
     private boolean permissionToRecordAccepted = false;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
@@ -113,11 +110,12 @@ public class MainScreenTime extends AppCompatActivity implements
     private static final int RECORD_REQUEST_CODE = 101;
 
     private boolean listening = false;
+
     private SpeechToText speechService;
     private TextToSpeech textToSpeech;
     private MicrophoneInputStream capture;
-    private Logger myLogger;
     private Context mContext;
+
     private String workspace_id;
     private String conversation_username;
     private String conversation_password;
@@ -126,15 +124,16 @@ public class MainScreenTime extends AppCompatActivity implements
     private String TTS_username;
     private String TTS_password;
     private String analytics_APIKEY;
+
     private SpeakerLabelsDiarization.RecoTokens recoTokens;
     private MicrophoneHelper microphoneHelper;
     private ComponentName cn;
     private int helloCount = 0;
     private int countColours = 0;
     private Timer timer;
-    private MediaPlayer mp;
 
-    ConstraintLayout mealLayout;
+    ConstraintLayout mainLayout;
+
     private String name;
 
     @Override
@@ -147,9 +146,7 @@ public class MainScreenTime extends AppCompatActivity implements
         mContext = getApplicationContext();
 
 
-        mealLayout = (ConstraintLayout) findViewById(R.id.mainLayout);
-
-
+        mainLayout = (ConstraintLayout) findViewById(R.id.mainLayout);
 
 
         // A logout button for the user to log out whenever they need to
@@ -223,9 +220,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
         // User input params initialisation
         inputMessage = (EditText) findViewById(R.id.message);
-        btnSend = (ImageButton) findViewById(R.id.btn_send);
-        btnRecord= (ImageButton) findViewById(R.id.btn_record);
-
 
         // Custom font for the application
         String customFont = "Montserrat-Regular.ttf";
@@ -323,8 +317,6 @@ public class MainScreenTime extends AppCompatActivity implements
         recordingButton = (ImageButton) findViewById(R.id.record_button);
 
         inputMessage = (EditText) findViewById(R.id.message);
-        btnSend = (ImageButton) findViewById(R.id.btn_send);
-        btnRecord= (ImageButton) findViewById(R.id.btn_record);
 
 
         // News button listener action
@@ -355,6 +347,7 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                 mp.start();
+                speak("Let me analyse that for you");
                 Intent intent = new Intent(getApplicationContext(), NaturalLanguageProcessing.class);
                 startActivity(intent);
             }
@@ -726,7 +719,7 @@ public class MainScreenTime extends AppCompatActivity implements
      */
     public class MyTimerTask extends TimerTask {
 
-        
+
         @Override
         public void run() {
             //Since we want to change something which is on hte UI
@@ -743,14 +736,12 @@ public class MainScreenTime extends AppCompatActivity implements
                         vibe.vibrate(150);
                     }
 
-
-
                     Random random = new Random();//this is random generator
-                    mealLayout.setBackgroundColor(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+                    mainLayout.setBackgroundColor(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
 
                     if(countColours == 30){
                         timer.cancel();
-                        mealLayout.setBackgroundResource(R.drawable.blurryimage);
+                        mainLayout.setBackgroundResource(R.drawable.blurryimage);
                         mp.stop();
                         countColours = 0;
                     }
@@ -758,6 +749,7 @@ public class MainScreenTime extends AppCompatActivity implements
             });
         }
     }
+
     //Private Methods - Speech to Text
     private RecognizeOptions getRecognizeOptions() {
         return new RecognizeOptions.Builder()
@@ -913,14 +905,10 @@ public class MainScreenTime extends AppCompatActivity implements
 
                     double nearly = Math.round (thisTime / 1.8);
 
-
                     // Getting the current weather phrases
                     String currentWeather =   nearly  + "°C";
 
-//                    String weatherPhreasetext =fd.getString("phrase_22char");
-
                     String imageloc= "icon" + fd.getString("icon_code");
-
 
                     // Getting the right image according to the weather
                     ImageView imageView = (ImageView) findViewById(R.id.imageView);
@@ -933,10 +921,6 @@ public class MainScreenTime extends AppCompatActivity implements
                     // Setting the current weather phrase
                     TextView weatherPhrase = (TextView) findViewById(R.id.weather);
                     weatherPhrase.setText(currentWeather);
-
-                    // Setting the current temperature
-                    //TextView temperatureText = (TextView) findViewById(R.id.tempText);
-                    //temperatureText.setText(weatherPhreasetext);
 
                 } catch (JSONException e){
                     Log.d("App", e.toString());
@@ -991,7 +975,9 @@ public class MainScreenTime extends AppCompatActivity implements
     }
 
 
-    // Inner class for the current address recovery
+    /**
+     * Inner class for the current address recovery
+     */
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
             super(handler);
@@ -1000,19 +986,10 @@ public class MainScreenTime extends AppCompatActivity implements
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
-            // Display the address string
-            // or an error message sent from the intent service.
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            //displayAddressOutput();
-//            TextView direccion = (TextView) findViewById(R.id.direccion);
-//            direccion.setText(mAddressOutput);
-            Log.d("App", mAddressOutput);
-
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                 Log.d("App", getString(R.string.address_found)) ;
             }
-
         }
     }
 
@@ -1076,7 +1053,4 @@ public class MainScreenTime extends AppCompatActivity implements
                 break;
         }
     }
-
-
-
 }
