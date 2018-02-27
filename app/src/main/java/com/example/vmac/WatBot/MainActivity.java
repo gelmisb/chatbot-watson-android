@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
 
-        AppCenter.start(getApplication(), "2f5e4913-4d1d-48a3-8614-60cfd288055a", com.microsoft.appcenter.analytics.Analytics.class, Crashes.class);
+        AppCenter.start(getApplication(), "2f5e4913-4d1d-48a3-8614-60cfd288055a", Analytics.class, Crashes.class);
 
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
