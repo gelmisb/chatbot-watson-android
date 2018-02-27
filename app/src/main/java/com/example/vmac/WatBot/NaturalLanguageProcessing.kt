@@ -19,9 +19,7 @@ class NaturalLanguageProcessing : Activity() {
     var newsSemanticAnalysis: String = ""
     var output: String  = ""
 
-    val sharedPref: SharedPreferences = getSharedPreferences("thispref", 0)
 
-    val editor = sharedPref.edit()
 
     val analyzer = NaturalLanguageUnderstanding(
             NaturalLanguageUnderstanding.VERSION_DATE_2017_02_27,
@@ -31,6 +29,8 @@ class NaturalLanguageProcessing : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPref: SharedPreferences = getSharedPreferences("mypref", 0)
+
 
 
         userPrefs = sharedPref.getString("userPrefs", "")
@@ -56,8 +56,7 @@ class NaturalLanguageProcessing : Activity() {
     }
 
     fun semanticAnalysis(text: String){
-
-        Log.i("made", "it")
+        val sharedPref: SharedPreferences = getSharedPreferences("mypref", 0)
 
         AsyncTask.execute {
 
@@ -106,9 +105,8 @@ class NaturalLanguageProcessing : Activity() {
 
             output = "Overall sentiment: ${overallSentiment}\n\n"
 
-//            val sharedPref = getSharedPreferences("mypref", 0)
 
-//            val editor = sharedPref.edit()
+            val editor = sharedPref.edit()
 
             if (text == userPrefs) {
                 editor.putString("userSemanticAnalysis", output)
