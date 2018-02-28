@@ -167,6 +167,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 LoginManager.getInstance().logOut();
                 Intent intent = new Intent(getApplicationContext(), GoogleSignInTrial.class);
                 startActivity(intent);
+                streamPlayer.interrupt();
                 finish();
             }
         });
@@ -468,7 +469,6 @@ public class MainScreenTime extends AppCompatActivity implements
             public void run() {
 
                 try {
-                    streamPlayer = new StreamPlayer();
                     streamPlayer.playStream(textToSpeech.synthesize(outMessage, Voice.EN_ALLISON).execute());
                     Thread.sleep(100);
                 } catch (Exception e) {

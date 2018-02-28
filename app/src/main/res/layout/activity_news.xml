@@ -12,7 +12,7 @@
         android:id="@+id/newsTitleList"
         style="@style/Widget.AppCompat.ListView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="516dp"
         android:background="@color/cast_expanded_controller_ad_label_background_color"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,4 +24,54 @@
 
 
     </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/cast_expanded_controller_ad_label_background_color"
+            android:fadingEdge="horizontal"
+            android:minHeight="?attr/actionBarSize"
+            app:titleTextColor="@android:color/white">
+
+            <!-- Layout for content is here. This can be a RelativeLayout  -->
+
+
+            <Button
+                android:id="@+id/backBtn"
+                android:layout_width="44dp"
+                android:layout_height="41dp"
+                android:layout_marginBottom="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/backy2"
+                app:layout_constraintBottom_toTopOf="@+id/dow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Current Weather"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+        </android.support.v7.widget.Toolbar>
+
+
+    </LinearLayout>
+
+
 </android.support.constraint.ConstraintLayout>

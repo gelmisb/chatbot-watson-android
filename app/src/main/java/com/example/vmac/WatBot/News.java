@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,9 +55,13 @@ import java.util.regex.Pattern;
 
 public class News extends AppCompatActivity {
 
+    // Class references
     NewsModel model;
     ListView newsList;
+
+    // UI components
     private static CustomListAdapter adapter;
+    private Button backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,17 @@ public class News extends AppCompatActivity {
         setContentView(R.layout.activity_news);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
+
+        backButton = (Button)findViewById(R.id.backBtn2);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // stop talking when the application is closed.
+                finish();
+
+            }
+        });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

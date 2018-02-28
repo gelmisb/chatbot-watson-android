@@ -37,6 +37,8 @@ public class SingleNewsActivity extends AppCompatActivity {
 
     Drawable d;
     ImageView iv;
+    Button backButton;
+
 
     private ProgressDialog simpleWaitDialog;
 
@@ -45,6 +47,19 @@ public class SingleNewsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_news);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
+
+
+        backButton = (Button)findViewById(R.id.backBtn2);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // stop talking when the application is closed.
+                finish();
+
+            }
+        });
+
 
         final Article article = (Article)getIntent().getSerializableExtra("Article");
 
