@@ -19,8 +19,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private SpeakerLabelsDiarization.RecoTokens recoTokens;
     private MicrophoneHelper microphoneHelper;
     private ComponentName cn;
+    private Button backButton;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -99,6 +103,22 @@ public class MainActivity extends AppCompatActivity {
 
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
+        backButton = (Button)findViewById(R.id.backBtn2);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // stop talking when the application is closed.
+                streamPlayer.interrupt();
+                finish();
+
+            }
+        });
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
 
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -241,7 +261,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    };
+    }
+
+    // Menu icons are inflated just as they were with actionbar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
     public void speak(final String outMessage){
 
