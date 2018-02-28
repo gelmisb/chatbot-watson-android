@@ -3,6 +3,7 @@ package com.example.vmac.WatBot;
 import android.*;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +63,8 @@ public class WeatherApp extends AppCompatActivity implements
     private String TTS_password;
     private String mAddressOutput;
     private  TextView weather, realF, dow;
+    private Button backButton;
+    private boolean isPlaying;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +73,26 @@ public class WeatherApp extends AppCompatActivity implements
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
         getLastKnownLocation();
+        streamPlayer = new StreamPlayer();
+
+
+        backButton = (Button)findViewById(R.id.backBtn);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // stop talking when the application is closed.
+                streamPlayer.interrupt();
+                finish();
+
+            }
+        });
+
+
+
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
@@ -135,14 +157,20 @@ public class WeatherApp extends AppCompatActivity implements
             public void run() {
 
                 try {
-                    streamPlayer = new StreamPlayer();
                     streamPlayer.playStream(textToSpeech.synthesize(outMessage, Voice.EN_ALLISON).execute());
+
+                    isPlaying = true;
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
         thread.start();
+
+        if(!isPlaying){
+        }
     }
 
 

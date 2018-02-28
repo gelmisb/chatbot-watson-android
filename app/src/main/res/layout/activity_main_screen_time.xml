@@ -7,7 +7,23 @@
     android:layout_height="match_parent"
     android:background="@drawable/blurryimage"
     android:weightSum="5"
+    android:screenOrientation="portrait"
     tools:context="com.example.vmac.WatBot.MainScreenTime">
+
+    <TextView
+        android:id="@+id/poweredBy2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="68dp"
+        android:fontFamily="casual"
+        android:text="powered by"
+        app:layout_constraintBottom_toTopOf="@+id/imageView5"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <include
         android:id="@+id/include"
@@ -310,13 +326,13 @@
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/record_button"
-        android:layout_width="65dp"
-        android:layout_height="60dp"
+        android:layout_width="71dp"
+        android:layout_height="69dp"
         android:background="@null"
         android:elevation="0dp"
         android:paddingLeft="10dp"
         android:scaleType="fitEnd"
-        android:src="@drawable/microphone"
+        android:src="@drawable/micro2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -325,8 +341,8 @@
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="234dp"
-        android:layout_height="49dp"
+        android:layout_width="235dp"
+        android:layout_height="58dp"
         android:layout_marginBottom="37dp"
         android:layout_marginTop="19dp"
         app:layout_constraintBottom_toTopOf="@+id/WeatherLayout"

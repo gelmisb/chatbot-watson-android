@@ -1,6 +1,8 @@
 package com.example.vmac.WatBot;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.transition.Fade;
 import android.support.transition.TransitionSet;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
@@ -49,6 +51,18 @@ public class WelcomeScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_screen);
+
+
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        if(pref.getBoolean("activity_executed", false)){
+            Intent intent = new Intent(this, GoogleSignInTrial.class);
+            startActivity(intent);
+            finish();
+        } else {
+            SharedPreferences.Editor ed = pref.edit();
+            ed.putBoolean("activity_executed", true);
+            ed.apply();
+        }
 
         showOff = (ImageView)findViewById(R.id.imageViewCircle);
 
@@ -238,7 +252,7 @@ public class WelcomeScreen extends AppCompatActivity {
         fadeOut5.setFillAfter(true);
 
 
-        tvWelcome.setText("Hi " + name);
+        tvWelcome.setText("Welcome ");
 
 
         fadeIn6.setDuration(2500);

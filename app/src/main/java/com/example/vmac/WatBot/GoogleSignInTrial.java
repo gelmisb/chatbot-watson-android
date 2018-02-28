@@ -9,6 +9,7 @@ import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -53,6 +54,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in_trial);
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
 
 
@@ -60,8 +62,9 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
             Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
             startActivity(intent);
+            finish();
+
         }
 
 

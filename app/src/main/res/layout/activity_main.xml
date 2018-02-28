@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     tools:menu="R.menu.topmenu"
+    android:screenOrientation="portrait"
     tools:context="com.example.vmac.WatBot.MainActivity">
 
 

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -28,6 +29,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 //import com.ibm.mobilefirstplatform.clientsdk.android.analytics.api.Analytics;
+import com.ibm.mobilefirstplatform.clientsdk.android.analytics.api.Analytics;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.Response;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
@@ -47,13 +49,11 @@ import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.crashes.Crashes;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -97,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = getApplicationContext();
 
-        AppCenter.start(getApplication(), "2f5e4913-4d1d-48a3-8614-60cfd288055a", Analytics.class, Crashes.class);
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
+
 
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -123,35 +124,35 @@ public class MainActivity extends AppCompatActivity {
         //Bluemix Mobile Analytics
         BMSClient.getInstance().initialize(getApplicationContext(), BMSClient.REGION_US_SOUTH);
 
-//        Analytics.init(getApplication(), "Mia-Testing", analytics_APIKEY, false, Analytics.DeviceEvent.ALL);
+        Analytics.init(getApplication(), "Mia-Testing", analytics_APIKEY, false, Analytics.DeviceEvent.ALL);
 
         myLogger = Logger.getLogger("myLogger");
         // Send recorded usage analytics to the Mobile Analytics Service
-//        Analytics.send(new ResponseListener() {
-//            @Override
-//            public void onSuccess(Response response) {
-//                // Handle Analytics send success here.
-//            }
-//
-//            @Override
-//            public void onFailure(Response response, Throwable throwable, JSONObject jsonObject) {
-//                // Handle Analytics send failure here.
-//            }
-//        });
-//
-//        // Send logs to the Mobile Analytics Service
-//        Logger.send(new ResponseListener() {
-//            @Override
-//            public void onSuccess(Response response) {
-//                // Handle Logger send success here.
-//            }
-//
-//            @Override
-//            public void onFailure(Response response, Throwable throwable, JSONObject jsonObject) {
-//                // Handle Logger send failure here.
-//            }
-//        });
-//
+        Analytics.send(new ResponseListener() {
+            @Override
+            public void onSuccess(Response response) {
+                // Handle Analytics send success here.
+            }
+
+            @Override
+            public void onFailure(Response response, Throwable throwable, JSONObject jsonObject) {
+                // Handle Analytics send failure here.
+            }
+        });
+
+        // Send logs to the Mobile Analytics Service
+        Logger.send(new ResponseListener() {
+            @Override
+            public void onSuccess(Response response) {
+                // Handle Logger send success here.
+            }
+
+            @Override
+            public void onFailure(Response response, Throwable throwable, JSONObject jsonObject) {
+                // Handle Logger send failure here.
+            }
+        });
+
         inputMessage = (EditText) findViewById(R.id.message);
         btnSend = (ImageButton) findViewById(R.id.btn_send);
 

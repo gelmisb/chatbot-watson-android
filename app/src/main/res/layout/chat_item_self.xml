@@ -3,6 +3,7 @@
     android:layout_height="wrap_content"
     android:gravity="right"
     android:orientation="vertical"
+    android:screenOrientation="portrait"
     android:paddingBottom="5dp"
     android:paddingLeft="16dp">
 

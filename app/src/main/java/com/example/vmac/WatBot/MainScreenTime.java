@@ -1,11 +1,13 @@
 package com.example.vmac.WatBot;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -141,6 +143,7 @@ public class MainScreenTime extends AppCompatActivity implements
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -150,6 +153,7 @@ public class MainScreenTime extends AppCompatActivity implements
         setContentView(R.layout.activity_main_screen_time);
         mContext = getApplicationContext();
 
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
         mainLayout = (ConstraintLayout) findViewById(R.id.mainLayout);
 
@@ -163,6 +167,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 LoginManager.getInstance().logOut();
                 Intent intent = new Intent(getApplicationContext(), GoogleSignInTrial.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -326,17 +331,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
         inputMessage = (EditText) findViewById(R.id.message);
 
-//
-//        takePicture.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
-//                mp.start();
-//                Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
         // News button listener action
         news.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -356,6 +350,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 mp.start();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
+
             }
         });
 
@@ -368,6 +363,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 speak("Let me analyse that for you");
                 Intent intent = new Intent(getApplicationContext(), NaturalLanguageProcessing.class);
                 startActivity(intent);
+
             }
         });
 
@@ -380,6 +376,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 mp.start();
                 Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
                 startActivity(intent);
+
             }
         });
 
@@ -412,13 +409,15 @@ public class MainScreenTime extends AppCompatActivity implements
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
 
+
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     recordingButton.setImageResource(R.drawable.microphone);
+
                     mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                     mp.start();
 
-                    try {
+                        try {
                         Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                         recordingButton.setImageResource(R.drawable.microphone1);
 
@@ -431,40 +430,31 @@ public class MainScreenTime extends AppCompatActivity implements
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
-                    Log.i("Key", "Key event down " + motionEvent);
                 }
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
                     recordingButton.setImageResource(R.drawable.microphone);
 
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
-                    try {
-                        recordMessage();
-                        sendMessage();
+                            try {
+                                recordMessage();
+                                sendMessage();
 
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-
-                    Log.i("Key", "Key event up " + motionEvent);
-                    Log.i("Message", " " + inputMessage.getText());
-
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, 2000);
                 }
-
                 return false;
             }
         });
 
         onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
-
-
     }
-
-
-
 
     /**
      * For the AI - to - user communication
