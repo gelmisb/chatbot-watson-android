@@ -14,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -66,11 +68,16 @@ public class News extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_news);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
+        model = new NewsModel();
 
-        backButton = (Button)findViewById(R.id.backBtn2);
+        backButton = (Button)findViewById(R.id.backBtn);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +90,6 @@ public class News extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        model = new NewsModel();
 
         new Test().execute("https://newsapi.org/v2/top-headlines?sources=the-irish-times&apiKey=b19ec501ac21494bb97c484975b6a764");
 
@@ -93,9 +99,7 @@ public class News extends AppCompatActivity {
 
         newsList = (ListView) findViewById(R.id.newsTitleList);
 
-//        ArrayAdapter<Article> articleArrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, model.getNewsList());
         adapter= new CustomListAdapter(model.getNewsList(),getApplicationContext());
-
 
         newsList.setAdapter(adapter);
 

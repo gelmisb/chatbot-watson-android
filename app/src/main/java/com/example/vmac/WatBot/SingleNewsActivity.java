@@ -16,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -45,11 +47,15 @@ public class SingleNewsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_single_news);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
 
-        backButton = (Button)findViewById(R.id.backBtn2);
+        backButton = (Button)findViewById(R.id.backBtn);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +79,7 @@ public class SingleNewsActivity extends AppCompatActivity {
 
         aTitle.setText(article.getTitle());
         aDescription.setText(article.getContent());
-        aAuthor.setText(article.getAuthor());
+        aAuthor.setText("by " + article.getAuthor());
         aDate.setText(article.getDate());
 
         aLink.setOnClickListener(new View.OnClickListener() {

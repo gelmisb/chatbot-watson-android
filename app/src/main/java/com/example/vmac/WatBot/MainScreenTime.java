@@ -36,6 +36,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -147,13 +149,24 @@ public class MainScreenTime extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        setContentView(R.layout.activity_main_screen_time);
+
+        //  Fixed Portrait orientation
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
         name = sharedPref.getString("username", "");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_screen_time);
+
+
         mContext = getApplicationContext();
 
-        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
+        streamPlayer = new StreamPlayer();
+
 
         mainLayout = (ConstraintLayout) findViewById(R.id.mainLayout);
 
@@ -166,8 +179,8 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 LoginManager.getInstance().logOut();
                 Intent intent = new Intent(getApplicationContext(), GoogleSignInTrial.class);
-                startActivity(intent);
                 streamPlayer.interrupt();
+                startActivity(intent);
                 finish();
             }
         });
@@ -338,6 +351,7 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                 mp.start();
+
                 Intent intent = new Intent(getApplicationContext(), News.class);
                 startActivity(intent);
             }
@@ -349,6 +363,7 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                 mp.start();
+
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
 
@@ -361,6 +376,7 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                 mp.start();
+
                 speak("Let me analyse that for you");
                 Intent intent = new Intent(getApplicationContext(), NaturalLanguageProcessing.class);
                 startActivity(intent);
@@ -375,6 +391,7 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                 mp.start();
+
                 Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
                 startActivity(intent);
 
@@ -413,14 +430,14 @@ public class MainScreenTime extends AppCompatActivity implements
 
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
-                    recordingButton.setImageResource(R.drawable.microphone);
+                    recordingButton.setImageResource(R.drawable.micro2);
 
                     mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                     mp.start();
 
                         try {
                         Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        recordingButton.setImageResource(R.drawable.microphone1);
+                        recordingButton.setImageResource(R.drawable.micro2pressed);
 
                         if (vibe != null) {
                             vibe.vibrate(100);
@@ -434,7 +451,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 }
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-                    recordingButton.setImageResource(R.drawable.microphone);
+                    recordingButton.setImageResource(R.drawable.micro2);
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -470,7 +487,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
                 try {
                     streamPlayer.playStream(textToSpeech.synthesize(outMessage, Voice.EN_ALLISON).execute());
-                    Thread.sleep(100);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

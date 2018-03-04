@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -69,16 +71,21 @@ public class WeatherApp extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_weather_app);
+
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
+
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
         TTS_password = "sarujZ1gbc40";
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
-        getLastKnownLocation();
+
+        textToSpeech = new TextToSpeech();
         streamPlayer = new StreamPlayer();
-
-
         backButton = (Button)findViewById(R.id.backBtn);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -90,8 +97,6 @@ public class WeatherApp extends AppCompatActivity implements
 
             }
         });
-
-
 
 
         // Here, thisActivity is the current activity
@@ -109,8 +114,9 @@ public class WeatherApp extends AppCompatActivity implements
             }
         }
 
+        getLastKnownLocation();
+
         //Watson Text-to-Speech Service on Bluemix
-        textToSpeech = new TextToSpeech();
         textToSpeech.setUsernameAndPassword(TTS_username, TTS_password);
     }
 

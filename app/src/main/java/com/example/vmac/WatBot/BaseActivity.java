@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -17,11 +18,16 @@ import android.util.Log;
 
 public class BaseActivity extends Activity{
 
+    String emotion;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final String realUserSentiment= getIntent().getStringExtra("Sentiment");
+
+        SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
+        emotion = sharedPref.getString("userEmotionAnalysis", "");
 
         Log.i("Message passed", realUserSentiment);
 
@@ -42,7 +48,7 @@ public class BaseActivity extends Activity{
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ai_faze)
                         .setContentTitle("Your profile has been assessed")
-                        .setContentText("Your " + sentiment.toLowerCase());
+                        .setContentText("Your " + sentiment.toLowerCase() + "It seems you are feeling " + emotion);
 
         //Vibration
         mBuilder.setVibrate(new long[300]);
