@@ -1,10 +1,9 @@
+
+[![Build Status](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android.svg?branch=master)](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android)
+
 <h1 align="center"> Poject M.I.A</h1>
 <h2><p align="center"> My Intelligent Assistant powered by <img src="images/logonumber2.png" width="150" /></p></h2>
 
-
-
-
-[![Build Status](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android.svg?branch=master)](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android)
 
 <p align="justify">	
 
