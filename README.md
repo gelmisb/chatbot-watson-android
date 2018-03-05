@@ -9,7 +9,14 @@
 
 Project M.I.A. is a personal assitant based on IBM Cloud Watson technologies. The application acts as users personal assitant though which the user can communicate either verbally or textually. It offers the most current weather and also with the latest news from Google API of Irish Times. 
 </p>
-<p align="center"><img src="images/main_screen.png" width="350" /></p>
+<p align="center">
+
+<img src="images/main_screen.png" width="300" />
+<img src="images/main_menu.png" width="300" />
+
+
+
+</p>
 
 <hr>
 
@@ -29,7 +36,7 @@ To develop a basic chatbot based on IBm Watson clone the repo and import the cod
 This is a personal virtual intelligent agent. The application has been developed in conjunction with IBM Bluemix platform to act as user’s personal assistant that would help them in their daily tasks. Since this is a personal assistant it has been developed to understand user’s overall feelings, using Sentiment analysis. 
 When the user logs in to the application using their social media account, their social media feed is then dragged down, parsed, converted and processed with semantic analysis. Therefore the assistant gains knowledge about the user’s social behaviour. 
 </p>
-<p align="center"><img src="images/main_menu.png" width="350" /></p>
+<p align="center"><img src="images/weather.png" width="300" /></p>
 
 * That's all for now, thesis with full documentation and project resources will be posted in the next few weeks * 
 
