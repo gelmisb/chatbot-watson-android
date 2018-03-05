@@ -5,10 +5,13 @@
 
 
 [![Build Status](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android.svg?branch=master)](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android)
+
 <p align="justify">	
 
-Project M.I.A. is a personal assitant based on IBM Cloud Watson technologies. The application acts as users personal assitant though which the user can communicate either verbally or textually. It offers the most current weather and also with the latest news from Google API of Irish Times. 
+<b>Project M.I.A.</b> is a personal assitant based on IBM Cloud Watson technologies. The application acts as users personal assitant though which the user can communicate either verbally or textually. It offers the most current weather and also with the latest news from Google API of Irish Times. The assistant also measures and analyses user sentiment and their emotion by using Natural Language Understanding API from IBM Cloud. The analysis is gathered from user's social media feed posts.
 </p>
+
+
 <p align="center">
 
 <img src="images/main_screen.png" width="300" />
