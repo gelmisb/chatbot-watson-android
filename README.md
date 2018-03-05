@@ -1,4 +1,5 @@
-# WatBot - An Android ChatBot powered by IBM Watson
+# Poject M.I.A
+## My Intelligent Assistant powered by IBM Watson
 
 [![Build Status](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android.svg?branch=master)](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android)
 
