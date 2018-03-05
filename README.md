@@ -31,6 +31,7 @@ When the user logs in to the application using their social media account, their
 </p>
 <p align="center"><img src="images/main_menu.png" width="350" /></p>
 
+* That's all for now, thesis with full documentation and project resources will be posted in the next few weeks * 
 
 ### Don't stop here!!! Keep coding and using Bluemix
 
