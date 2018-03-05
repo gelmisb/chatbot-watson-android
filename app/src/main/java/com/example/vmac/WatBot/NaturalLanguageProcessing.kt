@@ -46,15 +46,14 @@ class NaturalLanguageProcessing : Activity() {
 
     companion object {
 
-        fun passTheKey(str: String) {
+//        fun passTheKey() {
+//
+//            NaturalLanguageProcessing().semanticAnalysis(userPrefs)
+//        }
 
-            NaturalLanguageProcessing().semanticAnalysis(str)
-        }
 
-
-        fun newIntent(context: Context, sentiment: String){
+        fun newIntent(context: Context){
             val intent = Intent(context, BaseActivity::class.java)
-            intent.putExtra("Sentiment", sentiment)
             context.startActivity(intent)
         }
     }
@@ -64,14 +63,12 @@ class NaturalLanguageProcessing : Activity() {
 
         AsyncTask.execute {
 
+            val entityOptions = EntitiesOptions.Builder()
+                    .sentiment(true)
+                    .build()
 
             val emotion = EmotionOptions.Builder()
                     .document(true)
-                    .build()
-
-            val entityOptions = EntitiesOptions.Builder()
-                    .emotion(true)
-                    .sentiment(true)
                     .build()
 
             val sentimentOptions = SentimentOptions.Builder()
@@ -79,9 +76,9 @@ class NaturalLanguageProcessing : Activity() {
                     .build()
 
             val features = Features.Builder()
-                    .emotion(emotion)
                     .entities(entityOptions)
                     .sentiment(sentimentOptions)
+                    .emotion(emotion)
                     .build()
 
             val analyzerOptions = AnalyzeOptions.Builder()
@@ -95,9 +92,12 @@ class NaturalLanguageProcessing : Activity() {
 
 
             val overallSentimentScore = response.sentiment.document.score
+
             var overallSentiment = "Positive"
+
             if (overallSentimentScore < 0.0)
                 overallSentiment = "Negative"
+
             if (overallSentimentScore == 0.0)
                 overallSentiment = "Neutral"
 
@@ -106,42 +106,25 @@ class NaturalLanguageProcessing : Activity() {
 
             val editor = sharedPref.edit()
 
+            val validEmotions = arrayOf("Anger", "Disgust", "Fear", "Joy", "Sadness")
 
-            for(entity in response.entities) {
-                output += "${entity.text} (${entity.type})\n"
-                val validEmotions = arrayOf("Anger", "Joy", "Disgust", "Fear", "Sadness")
-
-                if(entity.emotion != null) {
-
-                    val emotionValues = arrayOf(
-                            entity.emotion.anger,
-                            entity.emotion.joy,
-                            entity.emotion.disgust,
-                            entity.emotion.fear,
-                            entity.emotion.sadness
-                    )
-                }
-
-                val emotionValues = arrayOf("Anger", "Joy", "Disgust", "Fear", "Sadness")
-
-                val currentEmotion = validEmotions[emotionValues.indexOf(emotionValues.max())]
-                output += "Emotion: ${currentEmotion}, " +
-                        "Sentiment: ${entity.sentiment.score}" +
-                        "\n\n"
+            val emotionValues = arrayOf(
+                    response.emotion.document.emotion.anger,
+                    response.emotion.document.emotion.disgust,
+                    response.emotion.document.emotion.fear,
+                    response.emotion.document.emotion.joy,
+                    response.emotion.document.emotion.sadness
+            )
 
 
-                if (text == userPrefs) {
-                    editor.putString("userSemanticAnalysis", output)
-                    editor.putString("userEmotionAnalysis", currentEmotion)
-                    editor.putString("newsSemanticAnalysis", "")
+            val currentEmotion = validEmotions[emotionValues.indexOf(emotionValues.max())]
+            output += "Emotion: ${currentEmotion}, " +
+                    "Sentiment: ${response.sentiment.document.score}" +
+                    "\n\n"
 
-                } else {
-                    editor.putString("newsSemanticAnalysis", output)
-                    editor.putString("userSemanticAnalysis", "")
 
-                }
-
-            }
+            editor.putString("userSemanticAnalysis", overallSentiment)
+            editor.putString("userEmotionAnalysis", currentEmotion)
 
             editor.apply()
 
@@ -153,9 +136,9 @@ class NaturalLanguageProcessing : Activity() {
 
                 Log.i("Sending stuff - User", userSemanticAnalysis)
                 Log.i("Sending stuff - News", userEmotionAnalysis)
+                Log.i("Overall", output)
 
-                newIntent(this, userSemanticAnalysis)
-                Log.i("emotion????", output)
+                newIntent(this)
 
             }
 

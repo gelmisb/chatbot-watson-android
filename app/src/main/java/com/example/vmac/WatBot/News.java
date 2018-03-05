@@ -91,7 +91,7 @@ public class News extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        new Test().execute("https://newsapi.org/v2/top-headlines?sources=the-irish-times&apiKey=b19ec501ac21494bb97c484975b6a764");
+        new Test().execute("https://newsapi.org/v2/everything?sources=the-irish-times&apiKey=b19ec501ac21494bb97c484975b6a764");
 
     }
 
@@ -110,12 +110,11 @@ public class News extends AppCompatActivity {
                 MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                 mp.start();
                 if (vibe != null) {
-                    vibe.vibrate(150);
+                    vibe.vibrate(100);
                 }
                 Intent intent = new Intent(News.this,SingleNewsActivity.class);
                 intent.putExtra("Article", model.getArticleAt((int)l));
                 startActivity(intent);
-
             }
         });
 
@@ -164,8 +163,6 @@ public class News extends AppCompatActivity {
                     JSONObject article = metadata.getJSONObject(i);
 
                     model.addArticle(new Article(article.getString("title"),article.getString("description"),article.getString("author"),article.getString("url"),article.getString("urlToImage"),article.getString("publishedAt")));
-
-
 
                 }
 

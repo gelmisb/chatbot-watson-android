@@ -19,36 +19,33 @@ import android.util.Log;
 public class BaseActivity extends Activity{
 
     String emotion;
+    String realUserSentiment;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String realUserSentiment= getIntent().getStringExtra("Sentiment");
-
         SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
+
         emotion = sharedPref.getString("userEmotionAnalysis", "");
+        realUserSentiment = sharedPref.getString("userSemanticAnalysis", "");
 
-        Log.i("Message passed", realUserSentiment);
-
-        if(realUserSentiment.contains("Positive")) {
-            notificationCenter(realUserSentiment);
-        }
+        notificationCenter();
     }
 
-    public void notificationCenter(String sentiment){
-
-        Log.i("baseActivity", "hi");
+    public void notificationCenter(){
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
         // The id of the channel.
         String CHANNEL_ID = "my_channel_01";
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ai_faze)
                         .setContentTitle("Your profile has been assessed")
-                        .setContentText("Your " + sentiment.toLowerCase() + "It seems you are feeling " + emotion);
+                        .setContentText("You're " + realUserSentiment.toLowerCase() + ". It seems you are feeling quite " + emotion);
 
         //Vibration
         mBuilder.setVibrate(new long[300]);
@@ -108,6 +105,7 @@ public class BaseActivity extends Activity{
         mNotificationManager.notify(1, mBuilder.build());
 
         finish();
+
     }
 
 }
