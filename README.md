@@ -6,14 +6,15 @@
 Project M.I.A. is a personal assitant based on IBM Cloud Watson technologies. The application acts as users personal assitant though which the user can communicate either verbally or textually. It offers the most current weather and also with the latest news from Google API of Irish Times. 
 <p align="center"><img src="images/main_screen.png" width="350" /></p>
 
-<h2>Coding the app on Android Studio</h2>
-Android Studio is the Official IDE for Android. Android Studio provides the fastest tools for building apps on every type of Android device.
+<hr>
+
+The baseline of this project has been forked from ``` git clone https://github.com/IBM-Bluemix/chatbot-watson-android.git ``` and has been then developed into this applicaiton. 
+
+<h3 color="red">This is project has been developed in respect to Bachelor's Degree in Computer Science in information technolgies.</h3>
 
 Clone the repo and import the code in Android Studio,
 
-```
-git clone https://github.com/IBM-Bluemix/chatbot-watson-android.git
-```
+
 ## Config.xml 
 
 Navigate to file app/src/main/res/values/config.xml and provide Bluemix service credentials 
