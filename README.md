@@ -1,7 +1,7 @@
 # Poject M.I.A
-## My Intelligent Assistant powered by IBM Watson
+## My Intelligent Assistant powered by <p align="center"><img src="images/logonumber2.png" width="150" /></p>
 
-<p align="center"><img src="images/logonumber2.png" width="150" /></p>
+
 
 
 [![Build Status](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android.svg?branch=master)](https://travis-ci.org/IBM-Bluemix/chatbot-watson-android)
