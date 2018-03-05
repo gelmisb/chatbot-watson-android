@@ -28,16 +28,26 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
+
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import android.transition.Scene;
+import android.transition.TransitionManager;
+import android.transition.Fade;
+
 import android.util.Base64;
 import android.util.Log;
+
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -52,13 +62,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.ibm.mobilefirstplatform.clientsdk.android.analytics.api.Analytics;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.BMSClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.core.api.ResponseListener;
@@ -87,6 +100,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.transition.Fade.IN;
 
 public class MainScreenTime extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ComponentCallbacks2 {
@@ -144,6 +159,9 @@ public class MainScreenTime extends AppCompatActivity implements
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    private Fade mFade;
+    private ViewGroup mRootView;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -161,6 +179,13 @@ public class MainScreenTime extends AppCompatActivity implements
 
         SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
         name = sharedPref.getString("username", "");
+
+
+
+
+
+
+
 
 
         mContext = getApplicationContext();
@@ -338,10 +363,31 @@ public class MainScreenTime extends AppCompatActivity implements
         semantic = (Button) findViewById(R.id.semanticBtn);
 
 
+        /**
+         * Transition
+         */
+
+        // Get the root view and create a transition
+        mRootView = (ViewGroup) findViewById(R.id.mainLayout);
+        mFade = new Fade(IN);
+
+        // Start recording changes to the view hierarchy
+        TransitionManager.beginDelayedTransition(mRootView, mFade);
+
+        ConstraintLayout weatherLayout = (ConstraintLayout)findViewById(R.id.weatherLayout);
+
+        // Add the new TextView to the view hierarchy
+        mRootView.addView(weatherLayout);
+        mRootView.addView(botSpeak);
+        mRootView.addView(news);
+        mRootView.addView(semantic);
+
+
 //        takePicture = (Button) findViewById(R.id.takePicture);
 
         // Recording button with a touch listener
         recordingButton = (ImageButton) findViewById(R.id.record_button);
+
 
         inputMessage = (EditText) findViewById(R.id.message);
 

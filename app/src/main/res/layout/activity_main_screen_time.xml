@@ -48,7 +48,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/WeatherLayout"
+        android:id="@+id/weatherLayout"
         android:layout_width="130dp"
         android:layout_height="100dp"
         android:layout_marginBottom="26dp"
@@ -344,13 +344,17 @@
         android:layout_height="58dp"
         android:layout_marginBottom="37dp"
         android:layout_marginTop="19dp"
-        app:layout_constraintBottom_toTopOf="@+id/WeatherLayout"
+        app:layout_constraintBottom_toTopOf="@+id/weatherLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_button"
         app:srcCompat="@drawable/logonumber2" />
+
     <FrameLayout
-        android:id="@+id/scene_root">
+        android:id="@+id/scene_root"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
         <include layout="@layout/a_scene" />
     </FrameLayout>
 
