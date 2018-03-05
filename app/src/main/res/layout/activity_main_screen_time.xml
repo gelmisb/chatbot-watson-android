@@ -47,6 +47,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <FrameLayout
+        android:id="@+id/scene_root"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
+        <include layout="@layout/a_scene" />
+    </FrameLayout>
+
     <android.support.constraint.ConstraintLayout
         android:id="@+id/weatherLayout"
         android:layout_width="130dp"
@@ -350,13 +358,6 @@
         app:layout_constraintTop_toBottomOf="@+id/login_button"
         app:srcCompat="@drawable/logonumber2" />
 
-    <FrameLayout
-        android:id="@+id/scene_root"
-        android:layout_width="0dp"
-        android:layout_height="0dp">
-
-        <include layout="@layout/a_scene" />
-    </FrameLayout>
 
 
 </android.support.constraint.ConstraintLayout>

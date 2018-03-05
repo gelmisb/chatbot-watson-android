@@ -2,6 +2,8 @@ package com.example.vmac.WatBot;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
@@ -35,6 +37,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import android.transition.Explode;
 import android.transition.Scene;
 import android.transition.TransitionManager;
 import android.transition.Fade;
@@ -52,6 +55,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -157,11 +162,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
     private String name;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
-    private Fade mFade;
-    private ViewGroup mRootView;
-
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -172,6 +172,15 @@ public class MainScreenTime extends AppCompatActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        // inside your activity (if you did not enable transitions in your theme)
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+
+        // set an exit transition
+
+        getWindow().setEnterTransition(new Explode());
+
+
+
         setContentView(R.layout.activity_main_screen_time);
 
         //  Fixed Portrait orientation
@@ -179,8 +188,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
         SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
         name = sharedPref.getString("username", "");
-
-
 
 
 
@@ -206,7 +213,6 @@ public class MainScreenTime extends AppCompatActivity implements
                 Intent intent = new Intent(getApplicationContext(), GoogleSignInTrial.class);
                 streamPlayer.interrupt();
                 startActivity(intent);
-                finish();
             }
         });
 
@@ -363,27 +369,6 @@ public class MainScreenTime extends AppCompatActivity implements
         semantic = (Button) findViewById(R.id.semanticBtn);
 
 
-        /**
-         * Transition
-         */
-
-        // Get the root view and create a transition
-        mRootView = (ViewGroup) findViewById(R.id.mainLayout);
-        mFade = new Fade(IN);
-
-        // Start recording changes to the view hierarchy
-        TransitionManager.beginDelayedTransition(mRootView, mFade);
-
-        ConstraintLayout weatherLayout = (ConstraintLayout)findViewById(R.id.weatherLayout);
-
-        // Add the new TextView to the view hierarchy
-        mRootView.addView(weatherLayout);
-        mRootView.addView(botSpeak);
-        mRootView.addView(news);
-        mRootView.addView(semantic);
-
-
-//        takePicture = (Button) findViewById(R.id.takePicture);
 
         // Recording button with a touch listener
         recordingButton = (ImageButton) findViewById(R.id.record_button);
@@ -438,9 +423,7 @@ public class MainScreenTime extends AppCompatActivity implements
                 mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
                 mp.start();
 
-                Intent intent = new Intent(getApplicationContext(), WeatherApp.class);
-                startActivity(intent);
-
+                startActivity(new Intent(getApplicationContext(), WeatherApp.class));
             }
         });
 
