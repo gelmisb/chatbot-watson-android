@@ -1,5 +1,5 @@
 # Poject M.I.A
-<p align="center"> My Intelligent Assistant powered by <img src="images/logonumber2.png" width="150" /></p>
+<h2><p align="center"> My Intelligent Assistant powered by <img src="images/logonumber2.png" width="150" /></p></h2>
 
 
 
