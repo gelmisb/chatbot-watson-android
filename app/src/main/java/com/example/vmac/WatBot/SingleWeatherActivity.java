@@ -3,11 +3,8 @@ package com.example.vmac.WatBot;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ComponentCallbacks2;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -24,22 +21,27 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.apache.http.HttpEntity;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
+public class SingleWeatherActivity extends AppCompatActivity {
 
-public class SingleNewsActivity extends AppCompatActivity {
 
     Drawable d;
     ImageView iv;
     Button backButton;
+
+    private String dow;
+    private int temp;
+    private int feelsLike;
+    private int icon;
+    private String phrase;
+    private int pop;
+    private String popType;
+    private String clouds;
+    private String rh;
+    private String wspd;
 
 
     private ProgressDialog simpleWaitDialog;
@@ -51,7 +53,7 @@ public class SingleNewsActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.activity_single_news);
+        setContentView(R.layout.activity_single_weather);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
 
@@ -67,73 +69,43 @@ public class SingleNewsActivity extends AppCompatActivity {
         });
 
 
-        final Article article = (Article)getIntent().getSerializableExtra("Article");
-
-        TextView aTitle = (TextView)findViewById(R.id.title);
-        TextView aDescription = (TextView)findViewById(R.id.description);
-        TextView aAuthor = (TextView)findViewById(R.id.author);
-        TextView aDate = (TextView)findViewById(R.id.date);
-        Button aLink = (Button)findViewById(R.id.read);
-
-        aTitle.setText(article.getTitle());
-        aDescription.setText(article.getContent());
-        aAuthor.setText("by " + article.getAuthor());
-        aDate.setText(article.getDate());
-
-        aLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
-                mp.start();
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(article.getURL()));
-                startActivity(browserIntent);
-
-            }
-        });
+        final Weatherw weatherw = (Weatherw)getIntent().getSerializableExtra("Weatherw");
 
 
-        String imageUrl = article.getImageURL();
-        new GetImage().execute(imageUrl,null,null);
+        TextView dow = (TextView)findViewById(R.id.dow);
+        TextView temp = (TextView)findViewById(R.id.temp);
+        TextView feelsLike = (TextView)findViewById(R.id.feelslike);
+        ImageView icon = (ImageView) findViewById(R.id.icon);
+        TextView pop = (TextView)findViewById(R.id.pop);
+        TextView popType = (TextView)findViewById(R.id.poptype);
+        TextView clouds = (TextView)findViewById(R.id.clouds);
+        TextView rh = (TextView)findViewById(R.id.rh);
+        TextView wspd = (TextView)findViewById(R.id.wspd);
+        TextView time = (TextView)findViewById(R.id.time);
+
+        dow.setText(weatherw.getDow());
+        temp.setText(weatherw.getTemp() + "°C "  + weatherw.getPhrase());
+        feelsLike.setText("Feels like: " + weatherw.getFeelsLike() + "°C");
+
+        icon.setImageResource(weatherw.getIcon());
+
+
+        if(weatherw.getPop() != 0)
+            pop.setText(weatherw.getPop());
+
+        pop.setText("Probability of precipitation: 0");
+        popType.setText("Precipitation type: " + weatherw.getPopType().toUpperCase());
+        clouds.setText("Cloud coverage: " + weatherw.getClouds() + "%");
+        rh.setText("Relative humidity " + weatherw.getRh() + "%");
+        wspd.setText( "Wind : " + weatherw.getWspd() + "km/h");
+        time.setText(weatherw.getTime());
+
 
         onTrimMemory(TRIM_MEMORY_RUNNING_MODERATE);
     }
 
 
-    @SuppressLint("StaticFieldLeak")
-    private class GetImage extends AsyncTask<String, String, String> {
 
-        URL url;
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            try{
-                url = new URL(urls[0]);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            try
-            {
-                InputStream is = (InputStream) url.getContent();
-                d = Drawable.createFromStream(is, "src name");
-                return "";
-            } catch (Exception e)
-            {
-                System.out.println("Exc=" + e);
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String image){
-            Animation myFadeInAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
-            iv = (ImageView) findViewById(R.id.image);
-            iv.setImageDrawable(d);
-            iv.startAnimation(myFadeInAnimation); //Set animation to your ImageView
-
-        }
-    }
 
 
     /**

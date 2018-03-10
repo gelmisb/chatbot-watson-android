@@ -1,41 +1,26 @@
 package com.example.vmac.WatBot;
 
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -44,16 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class News extends AppCompatActivity {
 
@@ -97,9 +72,9 @@ public class News extends AppCompatActivity {
 
     public void PopulateView(){
 
-        newsList = (ListView) findViewById(R.id.newsTitleList);
+        newsList = (ListView) findViewById(R.id.newsList);
 
-        adapter= new CustomListAdapter(model.getNewsList(),getApplicationContext());
+        adapter = new CustomListAdapter(model.getNewsList(),getBaseContext());
 
         newsList.setAdapter(adapter);
 
@@ -112,6 +87,8 @@ public class News extends AppCompatActivity {
                 if (vibe != null) {
                     vibe.vibrate(100);
                 }
+
+
                 Intent intent = new Intent(News.this,SingleNewsActivity.class);
                 intent.putExtra("Article", model.getArticleAt((int)l));
                 startActivity(intent);
@@ -171,18 +148,6 @@ public class News extends AppCompatActivity {
             } catch (JSONException e){
                 Log.d("App", e.toString());
             }
-
-//            String count = model.getNewsList().toString();
-//
-//            Pattern pt = Pattern.compile("[^a-zA-Z0-9 .,!]");
-//            Matcher match= pt.matcher(count);
-//            while(match.find())
-//            {
-//                count= count.replace(match.group(), "");
-//            }
-//            Log.i("Checking the news", count);
-
-//            com.example.vmac.WatBot.NaturalLanguageProcessing.Companion.passTheKey(count);
 
         }
     }

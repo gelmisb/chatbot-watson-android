@@ -145,8 +145,8 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
 
 //                                            UserInfo.setUsername(response.getJSONObject().get("name").toString());
                                             // Create object of SharedPreferences.
-                                            //now get Editor
                                             SharedPreferences.Editor editor= sharedPref.edit();
+
                                             //put your value
                                             editor.putString("username", Profile.getCurrentProfile().getFirstName());
 
@@ -161,30 +161,12 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
 
                                         // When all the actions are completed transfer the user to the Main Menu
                                         Intent intent = new Intent(getApplicationContext(), MainScreenTime.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                         startActivity(intent);
 
                                     }
 
 
                                 });
-
-//                            final Handler handler = new Handler();
-//
-//                            handler.postDelayed(new Runnable() {
-//
-//                                public void run() {
-//
-//                                    // When all the actions are completed transfer the user to the Main Menu
-//                                    Intent intent = new Intent(getApplicationContext(), BaseActivity.class);
-//                                    startActivity(intent);
-//
-//                                    handler.postDelayed(this, 10000); //now is every 2 minutes
-////                                    handler.postDelayed(this, 600000); //now is every 2 minutes
-//                                }
-//
-//                        }, 10000);
 
                         // This is for getting user's feed
                         // When user logs in this is retrieved and analysed

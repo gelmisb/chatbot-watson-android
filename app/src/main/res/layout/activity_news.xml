@@ -4,51 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/coffee1"
+    android:background="@drawable/newsback"
     android:screenOrientation="portrait"
     android:weightSum="10"
     tools:context="com.example.vmac.WatBot.News">
 
-    <ListView
-        android:id="@+id/newsTitleList"
-        style="@style/Widget.AppCompat.ListView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="9"
-        android:background="@color/cast_expanded_controller_ad_label_background_color"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
-
-
-    </ListView>
-
     <LinearLayout
-        android:id="@+id/linearLayout7"
+        android:id="@+id/linearLayout8"
         android:layout_width="match_parent"
         android:layout_height="53dp"
-        android:layout_weight="1"
         android:fitsSystemWindows="true"
-
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/newsTitleList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
+        android:visibility="visible">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/cast_expanded_controller_ad_label_background_color"
+            android:background="@color/cast_expanded_controller_ad_container_white_stripe_color"
             android:fadingEdge="horizontal"
             android:minHeight="?attr/actionBarSize"
             app:titleTextColor="@android:color/white">
@@ -75,7 +48,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Current News"
+                android:text="Latest news"
                 android:textAlignment="center"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -84,6 +57,24 @@
 
 
     </LinearLayout>
+
+    <ListView
+        android:id="@+id/newsList"
+        style="@style/Widget.AppCompat.ListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="1dp"
+        android:layout_weight="9"
+        android:background="@color/cast_expanded_controller_ad_label_background_color"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout8">
+
+
+    </ListView>
 
 
 </android.support.constraint.ConstraintLayout>

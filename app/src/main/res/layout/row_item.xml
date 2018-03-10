@@ -9,7 +9,7 @@
     android:layout_marginRight="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
-    android:background="@color/cast_expanded_controller_seek_bar_progress_background_tint_color"
+    android:background="@color/cardview_shadow_start_color"
     android:orientation="vertical"
     android:padding="10dp">
 
@@ -46,7 +46,7 @@
         android:layout_marginTop="4dp"
         android:text="Marshmallow"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@android:color/black"
+        android:textColor="@color/wallet_dim_foreground_holo_dark"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/item_info"
@@ -66,7 +66,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginTop="8dp"
         android:text="Android 6.0"
-        android:textColor="@android:color/black"
+        android:textColor="@color/wallet_dim_foreground_holo_dark"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

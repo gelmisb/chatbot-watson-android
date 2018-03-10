@@ -6,7 +6,7 @@
 
     <item>
         <bitmap
-            android:src="@mipmap/backgriound"/>
+            android:src="@mipmap/pic2"/>
 
     </item>
 

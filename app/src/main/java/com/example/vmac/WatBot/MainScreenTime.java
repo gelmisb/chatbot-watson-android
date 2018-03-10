@@ -211,7 +211,6 @@ public class MainScreenTime extends AppCompatActivity implements
             public void onClick(View view) {
                 LoginManager.getInstance().logOut();
                 Intent intent = new Intent(getApplicationContext(), GoogleSignInTrial.class);
-                streamPlayer.interrupt();
                 startActivity(intent);
             }
         });
@@ -356,7 +355,7 @@ public class MainScreenTime extends AppCompatActivity implements
 
         // UI initialisation for all the components on the screen
 
-        // Weather screen
+        // Weatherw screen
         weatherButton = (Button) findViewById(R.id.buttonWeather);
 
         // Watson conversation AI communication and messaging screen
@@ -416,7 +415,7 @@ public class MainScreenTime extends AppCompatActivity implements
         });
 
 
-        // Weather button listener action
+        // Weatherw button listener action
         weatherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

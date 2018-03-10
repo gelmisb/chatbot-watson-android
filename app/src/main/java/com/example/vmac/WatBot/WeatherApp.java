@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
@@ -27,11 +28,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.awareness.state.*;
+import com.google.android.gms.awareness.state.Weather;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -42,6 +48,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,6 +82,10 @@ public class WeatherApp extends AppCompatActivity implements
     private  TextView weather, realF, dow;
     private Button backButton;
     private boolean isPlaying;
+    private WeatherModel model;
+    private ListView weatherList;
+    private static CustomWeatherListAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +97,8 @@ public class WeatherApp extends AppCompatActivity implements
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
         setContentView(R.layout.activity_weather_app);
+
+        model = new WeatherModel();
 
 
         TTS_username = "c0e182f0-b270-4da3-8b29-3688aa598322";
@@ -200,38 +215,49 @@ public class WeatherApp extends AppCompatActivity implements
                     JSONObject weatherObject = new JSONObject(response);
                     JSONArray metadata = weatherObject.getJSONArray("forecasts");
                     JSONObject fd = metadata.getJSONObject(0);
-                    int temp = fd.getInt("temp");
 
-                    Log.d("Forecast", "IS the damn response: " + fd);
-
-                    int thisTime = temp -32;
-                    double nearly = Math.round (thisTime / 1.8);
-
-                    int fullMath = fd.getInt("feels_like");
-                    int total = fullMath - 32;
-                    double nearly2 = Math.round (total / 1.8);
-
-                    String currentWeather = fd.getString("phrase_22char") + ", " + nearly  + "°C";
+//                    LinearLayout m_ll = (LinearLayout) findViewById(R.id.llMain);
+//
+//                    for(int i=0;i<metadata.length();i++) {
+//                        JSONObject newFd = fd.getJSONObject("dow");
+//                        TextView text = new TextView(getBaseContext());
+//                        text.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//                        text.setText("hello"+newFd.getString("dow"));
+//                        m_ll.addView(text);
+//                    }
 
 
-                    String imageloc= "icon" + fd.getString("icon_code");
 
 
-                    ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                    // Get the data for the next 12 hours
+                    for(int i = 0; i < 12; i++){
 
+                        fd = metadata.getJSONObject(i);
 
-                    int id  = getBaseContext().getResources().getIdentifier(imageloc, "drawable", getBaseContext().getPackageName());
-                    imageView.setImageResource(id);
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-                    weather = (TextView) findViewById(R.id.weather);
-                    weather.setText("Current temperature: " + currentWeather);
+                        Calendar cal = Calendar.getInstance();
+                        cal.add(Calendar.HOUR, i);
 
-                    realF = (TextView) findViewById(R.id.realTemp);
-                    realF.setText("Real Feel: " + nearly2 + "°C");
+                        String time = sdf.format(cal.getTime());
 
-                    dow = (TextView)findViewById(R.id.dow);
-                    dow.setText(fd.getString("dow"));
+                        int temp = fd.getInt("temp");
 
+                        int thisTime = temp -32;
+                        double nearly = Math.round (thisTime / 1.8);
+
+                        int fullMath = fd.getInt("feels_like");
+                        int total = fullMath - 32;
+                        double nearly2 = Math.round (total / 1.8);
+
+                        String imageloc= "icon" + fd.getString("icon_code");
+                        int id  = getBaseContext().getResources().getIdentifier(imageloc, "drawable", getBaseContext().getPackageName());
+
+                        model.addWeather(new Weatherw(fd.getString("dow"), nearly, nearly2, id,fd.getString("phrase_22char"), fd.getInt("pop"), fd.getString("precip_type"), fd.getString("clds"), fd.getString("rh"), fd.getString("wspd"), time));
+                    }
+                    PopulateView();
+
+                    /*
                     String theSpokenString = "In your area - currently, it's, " + nearly  + "°C " + fd.getString("phrase_22char") +  " Where it's "  +fd.getString("clds") + "% are cloud coverage and " +fd.getString("rh") + "% humidity - it currently feels like "  + nearly2 + "°C";
 
                     if(fd.getInt("pop") == 0 ){
@@ -241,11 +267,9 @@ public class WeatherApp extends AppCompatActivity implements
                     if(fd.getInt("pop") > 0 ){
                         speak(theSpokenString + "There is a probability of " + fd.getString("precip_type") + " of " + fd.getInt("pop") + " percent - - Maybe you'd like to grab a coat just in case?");
                     }
-
+*/
                 } catch (JSONException e){
                     Log.d("App", e.toString());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {
@@ -270,6 +294,31 @@ public class WeatherApp extends AppCompatActivity implements
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
 
+
+    }
+
+    public void PopulateView(){
+
+        weatherList = (ListView) findViewById(R.id.weatherList);
+
+        adapter = new CustomWeatherListAdapter(model.getWeatherList(),getApplicationContext());
+
+        weatherList.setAdapter(adapter);
+
+        weatherList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.whoop);
+                mp.start();
+                if (vibe != null) {
+                    vibe.vibrate(100);
+                }
+                Intent intent = new Intent(getApplicationContext(), SingleWeatherActivity.class);
+                intent.putExtra("Weatherw", model.getWeatherAt((int)l));
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -309,7 +358,7 @@ public class WeatherApp extends AppCompatActivity implements
             // or an error message sent from the intent service.
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             //displayAddressOutput();
-            TextView direccion = (TextView) findViewById(R.id.direccion);
+            TextView direccion = (TextView) findViewById(R.id.dirrection);
             direccion.setText(mAddressOutput);
             Log.d("App", mAddressOutput);
 
