@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private MicrophoneHelper microphoneHelper;
     private ComponentName cn;
     private Button backButton;
+    private String name;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);     //  Fixed Portrait orientation
 
         mContext = getApplicationContext();
-        backButton = (Button)findViewById(R.id.backBtn2);
+        backButton = (Button)findViewById(R.id.backBtn);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +166,12 @@ public class MainActivity extends AppCompatActivity {
                 // Handle Logger send failure here.
             }
         });
+
+        SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
+        name = sharedPref.getString("username", "");
+
+
+
 
         inputMessage = (EditText) findViewById(R.id.message);
         btnSend = (ImageButton) findViewById(R.id.btn_send);
@@ -255,13 +263,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Menu icons are inflated just as they were with actionbar
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+
 
     public void speak(final String outMessage){
 
@@ -399,7 +401,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 if(outMessage.getMessage().equals("Hello . How can I help you?"))
                                 {
-                                    outMessage.setMessage("Hello " + UserInfo.getUsername() + ", how could I assist you?");
+                                    outMessage.setMessage("Hello " + name + ", how could I assist you?");
                                 }
 
                                 Log.i(String.valueOf(outMessage), String.valueOf(outMessage.getMessage()));

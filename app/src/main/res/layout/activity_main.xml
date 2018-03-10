@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,29 +13,32 @@
     <include
         layout="@layout/content_chat_room"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="605dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout7" />
 
     <LinearLayout
+        android:id="@+id/linearLayout7"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:orientation="vertical">
-
-
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="@color/cast_expanded_controller_ad_container_white_stripe_color"
+            android:fadingEdge="horizontal"
             android:minHeight="?attr/actionBarSize"
             app:titleTextColor="@android:color/white">
 
-        <!-- Layout for content is here. This can be a RelativeLayout  -->
+            <!-- Layout for content is here. This can be a RelativeLayout  -->
 
 
             <Button
-                android:id="@+id/backBtn2"
+                android:id="@+id/backBtn"
                 android:layout_width="44dp"
                 android:layout_height="41dp"
                 android:layout_marginBottom="0dp"
@@ -49,9 +52,19 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chat with Mia"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
         </android.support.v7.widget.Toolbar>
+
 
     </LinearLayout>
 
 
-</android.support.design.widget.CoordinatorLayout>
+</android.support.constraint.ConstraintLayout >
