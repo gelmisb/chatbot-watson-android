@@ -257,19 +257,24 @@ public class WeatherApp extends AppCompatActivity implements
                     }
                     PopulateView();
 
-                    /*
-                    String theSpokenString = "In your area - currently, it's, " + nearly  + "°C " + fd.getString("phrase_22char") +  " Where it's "  +fd.getString("clds") + "% are cloud coverage and " +fd.getString("rh") + "% humidity - it currently feels like "  + nearly2 + "°C";
 
-                    if(fd.getInt("pop") == 0 ){
+                    final Weatherw weatherw = (Weatherw)getIntent().getSerializableExtra("Weatherw");
+
+
+                    String theSpokenString = "In your area - currently, it's, " + weatherw.getTemp()  + "°C " + weatherw.getPhrase() +  " it currently feels like "  + weatherw.getFeelsLike() + "°C";
+
+                    if(weatherw.getPop() == 0 ){
                         speak(theSpokenString);
                     }
 
-                    if(fd.getInt("pop") > 0 ){
-                        speak(theSpokenString + "There is a probability of " + fd.getString("precip_type") + " of " + fd.getInt("pop") + " percent - - Maybe you'd like to grab a coat just in case?");
+                    if(weatherw.getPop()  > 0 ){
+                        speak(theSpokenString + "There is a probability of " +weatherw.getPopType() + " of " + weatherw.getPop() + " percent - - Maybe you'd like to grab a coat just in case?");
                     }
-*/
+
                 } catch (JSONException e){
                     Log.d("App", e.toString());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {

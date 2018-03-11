@@ -32,17 +32,6 @@ public class SingleWeatherActivity extends AppCompatActivity {
     ImageView iv;
     Button backButton;
 
-    private String dow;
-    private int temp;
-    private int feelsLike;
-    private int icon;
-    private String phrase;
-    private int pop;
-    private String popType;
-    private String clouds;
-    private String rh;
-    private String wspd;
-
 
     private ProgressDialog simpleWaitDialog;
 

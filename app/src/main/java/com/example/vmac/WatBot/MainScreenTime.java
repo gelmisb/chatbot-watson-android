@@ -19,6 +19,7 @@ import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.Vibrator;
@@ -188,9 +189,6 @@ public class MainScreenTime extends AppCompatActivity implements
 
         SharedPreferences sharedPref= getSharedPreferences("mypref", 0);
         name = sharedPref.getString("username", "");
-
-
-
 
 
 
@@ -595,6 +593,34 @@ public class MainScreenTime extends AppCompatActivity implements
             timer.schedule(myTimerTask,500,500);
         }
 
+        if(inputMessage.getText().toString().contains("restaurants") || inputMessage.getText().toString().contains("hungry")){
+
+            // Search for restaurants nearby
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q=restaurants");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        }
+
+        if(inputMessage.getText().toString().contains("shops") ||  inputMessage.getText().toString().contains("shopping")){
+
+            // Search for restaurants nearby
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q=shops");
+            Log.i("Shopping", "And nothing happened?");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        }
+
+        if(inputMessage.getText().toString().contains("petrol") || inputMessage.getText().toString().contains("gas")){
+
+            // Search for restaurants nearby
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q=petrol+stations");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        }
+
         // Done
         if(inputMessage.getText().toString().contains("call")){
             Intent intent = new Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI);
@@ -606,6 +632,7 @@ public class MainScreenTime extends AppCompatActivity implements
             Intent intent = new Intent(this, WeatherApp.class);
             startActivity(intent);
         }
+
 
         // Done
         if(inputMessage.getText().toString().contains("music")){
