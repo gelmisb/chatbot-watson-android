@@ -489,7 +489,7 @@ public class MainScreenTime extends AppCompatActivity implements
                                 e.printStackTrace();
                             }
                         }
-                    }, 1200);
+                    }, 1500);
                 }
                 return false;
             }

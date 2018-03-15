@@ -24,8 +24,8 @@ public class CustomWeatherListAdapter extends ArrayAdapter<Weatherw> implements 
 
     // View lookup cache
     private static class ViewHolder {
-        TextView dow;
         TextView temp;
+        TextView time;
         ImageView info;
         ImageView weatherIcon;
     }
@@ -75,7 +75,7 @@ public class CustomWeatherListAdapter extends ArrayAdapter<Weatherw> implements 
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item1, parent, false);
-            viewHolder.dow = (TextView) convertView.findViewById(R.id.title);
+            viewHolder.time = (TextView) convertView.findViewById(R.id.time);
             viewHolder.temp = (TextView) convertView.findViewById(R.id.date);
             viewHolder.info = (ImageView) convertView.findViewById(R.id.item_info);
             viewHolder.weatherIcon = (ImageView) convertView.findViewById(R.id.weatherIcon);
@@ -96,8 +96,8 @@ public class CustomWeatherListAdapter extends ArrayAdapter<Weatherw> implements 
 
         assert model != null;
 
-        viewHolder.dow.setText(model.getDow());
         viewHolder.temp.setText(" " + model.getTemp() + "°C");
+        viewHolder.time.setText(" " + model.getTime());
         viewHolder.weatherIcon.setImageResource(model.getIcon());
 
         viewHolder.info.setOnClickListener(this);

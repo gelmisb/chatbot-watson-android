@@ -32,7 +32,8 @@ public class Weatherw implements Serializable {
         this.pop = pop;
         this.popType = popType;
         this.clouds = clouds;
-        this.rh = wspd;
+        this.rh = rh;
+        this.wspd = wspd;
         this.time = time;
     }
 

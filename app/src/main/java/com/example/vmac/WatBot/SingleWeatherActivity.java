@@ -90,16 +90,17 @@ public class SingleWeatherActivity extends AppCompatActivity {
         clouds.setText("Cloud coverage: " + weatherw.getClouds() + "%");
         rh.setText("Relative humidity " + weatherw.getRh() + "%");
 
-        if(weatherw.getWspd() == null){
-            wspd.setText("Wind : 0 km/h");
+
+
+        if(!weatherw.getWspd().equals("null")){
+            wspd.setText( "Wind : " + weatherw.getWspd() + " km/h");
 
         } else {
-            wspd.setText( "Wind : " + weatherw.getWspd() + "km/h");
-
+            wspd.setText("Wind : 0 km/h");
         }
 
 
-        time.setText(weatherw.getTime());
+        time.setText("" + weatherw.getTime());
 
         dow.setTypeface(null, Typeface.BOLD);
         temp.setTypeface(null, Typeface.BOLD);

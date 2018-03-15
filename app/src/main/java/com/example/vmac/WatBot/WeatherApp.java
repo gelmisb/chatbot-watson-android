@@ -85,6 +85,7 @@ public class WeatherApp extends AppCompatActivity implements
     private WeatherModel model;
     private ListView weatherList;
     private static CustomWeatherListAdapter adapter;
+    private double nearly, nearly2;
 
 
     @Override
@@ -231,16 +232,20 @@ public class WeatherApp extends AppCompatActivity implements
                         int temp = fd.getInt("temp");
 
                         int thisTime = temp -32;
-                        double nearly = Math.round (thisTime / 1.8);
+                        nearly = Math.round (thisTime / 1.8);
 
                         int fullMath = fd.getInt("feels_like");
                         int total = fullMath - 32;
-                        double nearly2 = Math.round (total / 1.8);
+                        nearly2 = Math.round (total / 1.8);
 
                         String imageloc= "icon" + fd.getString("icon_code");
                         int id  = getBaseContext().getResources().getIdentifier(imageloc, "drawable", getBaseContext().getPackageName());
 
-                        model.addWeather(new Weatherw(fd.getString("dow"), nearly, nearly2, id,fd.getString("phrase_22char"), fd.getInt("pop"), fd.getString("precip_type"), fd.getString("clds"), fd.getString("rh"), fd.getString("wspd"), time));
+                        Log.i("Weather wind", fd.getString("wspd"));
+                        Log.i("Weather gust", fd.getString("gust"));
+                        Log.i("Weather wdir ", fd.getString("wdir"));
+
+                        model.addWeather(new Weatherw(fd.getString("dow"), nearly, nearly2, id,fd.getString("phrase_22char"), fd.getInt("pop"), fd.getString("precip_type"), fd.getString("clds"), fd.getString("rh"), fd.getString("gust"), time));
                     }
                     PopulateView();
 
@@ -248,7 +253,7 @@ public class WeatherApp extends AppCompatActivity implements
 
 
 
-                    String theSpokenString = "In your area - currently, it's, " + fd.get("temp")  + "°C " + fd.get("phrase_22char") +  " it currently feels like "  + fd.get("feels_like") + "°C";
+                    String theSpokenString = "In your area - currently, it's, " + nearly  + "°C " + fd.get("phrase_22char") +  " it currently feels like "  + nearly2 + "°C";
 
                     if((int)fd.get("pop") == 0 ){
                         speak(theSpokenString);
