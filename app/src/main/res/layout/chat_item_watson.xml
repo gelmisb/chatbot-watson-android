@@ -5,8 +5,8 @@
     android:orientation="horizontal">
 
     <android.support.v7.widget.AppCompatImageView
-        android:layout_width="53dp"
-        android:layout_height="69dp"
+        android:layout_width="45dp"
+        android:layout_height="60dp"
         android:layout_marginLeft="1dp"
         android:src="@mipmap/ai_faze" />
 

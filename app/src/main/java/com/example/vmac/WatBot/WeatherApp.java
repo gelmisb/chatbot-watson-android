@@ -114,7 +114,7 @@ public class WeatherApp extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
                 // stop talking when the application is closed.
-                streamPlayer.interrupt();
+
                 finish();
 
             }
@@ -216,19 +216,6 @@ public class WeatherApp extends AppCompatActivity implements
                     JSONArray metadata = weatherObject.getJSONArray("forecasts");
                     JSONObject fd = metadata.getJSONObject(0);
 
-//                    LinearLayout m_ll = (LinearLayout) findViewById(R.id.llMain);
-//
-//                    for(int i=0;i<metadata.length();i++) {
-//                        JSONObject newFd = fd.getJSONObject("dow");
-//                        TextView text = new TextView(getBaseContext());
-//                        text.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//                        text.setText("hello"+newFd.getString("dow"));
-//                        m_ll.addView(text);
-//                    }
-
-
-
-
                     // Get the data for the next 12 hours
                     for(int i = 0; i < 12; i++){
 
@@ -258,18 +245,19 @@ public class WeatherApp extends AppCompatActivity implements
                     PopulateView();
 
 
-                    final Weatherw weatherw = (Weatherw)getIntent().getSerializableExtra("Weatherw");
 
 
-                    String theSpokenString = "In your area - currently, it's, " + weatherw.getTemp()  + "°C " + weatherw.getPhrase() +  " it currently feels like "  + weatherw.getFeelsLike() + "°C";
 
-                    if(weatherw.getPop() == 0 ){
+                    String theSpokenString = "In your area - currently, it's, " + fd.get("temp")  + "°C " + fd.get("phrase_22char") +  " it currently feels like "  + fd.get("feels_like") + "°C";
+
+                    if((int)fd.get("pop") == 0 ){
                         speak(theSpokenString);
                     }
 
-                    if(weatherw.getPop()  > 0 ){
-                        speak(theSpokenString + "There is a probability of " +weatherw.getPopType() + " of " + weatherw.getPop() + " percent - - Maybe you'd like to grab a coat just in case?");
+                    if((int)fd.get("pop") >= 0){
+                        speak(theSpokenString + "There is a probability of " + fd.get("precip_type") + " of " + fd.get("pop") + " percent - - Maybe you'd like to grab a coat just in case?");
                     }
+
 
                 } catch (JSONException e){
                     Log.d("App", e.toString());

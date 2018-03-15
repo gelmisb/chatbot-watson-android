@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="590dp"
+    android:background="@drawable/mback1"
     android:screenOrientation="portrait"
-    android:background="@android:color/darker_gray"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.vmac.WatBot.MainActivity"
     tools:showIn="@layout/activity_main">

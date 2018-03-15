@@ -72,12 +72,7 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
             finish();
-
         }
-
-
-
-
 
         sharedPref= getSharedPreferences("mypref", 0);
 
@@ -88,7 +83,6 @@ public class GoogleSignInTrial extends AppCompatActivity implements ComponentCal
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("user_status, user_posts, user_likes"));
-
 
         // Callback registration
         loginButton.registerCallback(callbackManager,

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -78,16 +79,31 @@ public class SingleWeatherActivity extends AppCompatActivity {
 
         icon.setImageResource(weatherw.getIcon());
 
+        if(weatherw.getPop() > 0){
+            pop.setText("Probability of precipitation: " + weatherw.getPop() + "%");
+        } else {
+            pop.setText("Probability of precipitation: 0 %");
+        }
 
-        if(weatherw.getPop() != 0)
-            pop.setText(weatherw.getPop());
 
-        pop.setText("Probability of precipitation: 0");
-        popType.setText("Precipitation type: " + weatherw.getPopType().toUpperCase());
+        popType.setText("Precipitation type: " + weatherw.getPopType());
         clouds.setText("Cloud coverage: " + weatherw.getClouds() + "%");
         rh.setText("Relative humidity " + weatherw.getRh() + "%");
-        wspd.setText( "Wind : " + weatherw.getWspd() + "km/h");
+
+        if(weatherw.getWspd() == null){
+            wspd.setText("Wind : 0 km/h");
+
+        } else {
+            wspd.setText( "Wind : " + weatherw.getWspd() + "km/h");
+
+        }
+
+
         time.setText(weatherw.getTime());
+
+        dow.setTypeface(null, Typeface.BOLD);
+        temp.setTypeface(null, Typeface.BOLD);
+        time.setTypeface(null, Typeface.BOLD);
 
 
         onTrimMemory(TRIM_MEMORY_RUNNING_MODERATE);

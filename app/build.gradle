@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.github.kittinunf.fuel:fuel-android:1.10.0'
 
     compile 'com.android.volley:volley:1.0.0'
-    compile 'com.google.android.gms:play-services-location:11.6.0'
+//    compile 'com.google.android.gms:play-services-location:11.6.0'
 
 
     compile 'com.facebook.android:facebook-login:4.30.0'

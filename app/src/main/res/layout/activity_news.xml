@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/newsback"
+    android:background="@drawable/nback1"
     android:screenOrientation="portrait"
     android:weightSum="10"
     tools:context="com.example.vmac.WatBot.News">

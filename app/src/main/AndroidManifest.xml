@@ -28,10 +28,10 @@
         android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:icon="@mipmap/microphone"
+        android:icon="@mipmap/brain"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:roundIcon="@mipmap/microphone"
+        android:roundIcon="@mipmap/brain"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">

@@ -6,9 +6,8 @@
 
     <item>
         <bitmap
-            android:src="@mipmap/pic2"/>
+            android:src="@mipmap/gellogo"/>
 
     </item>
-
 </layer-list>
 

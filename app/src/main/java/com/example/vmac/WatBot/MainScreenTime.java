@@ -191,8 +191,6 @@ public class MainScreenTime extends AppCompatActivity implements
         name = sharedPref.getString("username", "");
 
 
-
-
         mContext = getApplicationContext();
 
         streamPlayer = new StreamPlayer();
@@ -491,7 +489,7 @@ public class MainScreenTime extends AppCompatActivity implements
                                 e.printStackTrace();
                             }
                         }
-                    }, 2000);
+                    }, 1200);
                 }
                 return false;
             }
