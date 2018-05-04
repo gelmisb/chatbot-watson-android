@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#adadad</color>
+    <color name="colorPrimaryDark">#0066cc</color>
+    <color name="colorAccent">#113ab2</color>
+    <color name="bg_bubble_self">#008ae6</color>
+    <color name="bg_bubble_watbot">#ecf0f1</color>
+    <color name="backgroundColour">#004d99</color>
+
+    <color name="firstOne">#4db8ff</color>
+    <color name="secondOne">#008ae6</color>
+    <color name="thirdOne">#004d80</color>
+
+    <color name="black_overlay">#0066cc</color>
+</resources>

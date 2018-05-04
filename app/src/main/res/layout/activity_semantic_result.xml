@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/skin"
+    tools:context="com.example.vmac.WatBot.SemanticResult">
+
+    <LinearLayout
+        android:id="@+id/linearLayout8"
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/cast_expanded_controller_ad_container_white_stripe_color"
+            android:fadingEdge="horizontal"
+            android:minHeight="?attr/actionBarSize"
+            app:titleTextColor="@android:color/white">
+
+            <!-- Layout for content is here. This can be a RelativeLayout  -->
+
+
+            <Button
+                android:id="@+id/backBtn"
+                android:layout_width="44dp"
+                android:layout_height="41dp"
+                android:layout_marginBottom="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/backy2"
+                app:layout_constraintBottom_toTopOf="@+id/dow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="275dp"
+                android:layout_height="wrap_content"
+                android:text="Your personal analysis"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+        </android.support.v7.widget.Toolbar>
+
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_margin="50dp"
+        android:background="@drawable/roundlayout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+        <TextView
+            android:id="@+id/results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="120dp"
+            android:padding="25dp"
+            android:text="TextView"
+            android:textAlignment="textStart"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="109dp"
+        android:text="Your full analysis results"
+        android:textAppearance="@android:style/TextAppearance.Holo.Widget.ActionBar.Title"
+        android:textColor="@color/cast_intro_overlay_background_color"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:typeface="sans"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.035" />
+
+</android.support.constraint.ConstraintLayout>
